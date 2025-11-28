@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('rutas', function (Blueprint $table) {
             $table->id();
-            $table->integer('idMotorista');
+            $table->integer('idMotorista')->nullable();
             $table->date('fecha');
             $table->string('estado', 50);
             $table->timestamps();

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('historial_envios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idPaquete')->constrained('paquetes')->cascadeOnDelete();
-            $table->foreignId('idMotorista')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('idPaquete')->nullable()->constrained('paquetes')->cascadeOnDelete();
+            $table->foreignId('idMotorista')->nullable()->constrained('users')->cascadeOnDelete();
             $table->string('estado', 50);
             $table->string('comentarios')->nullable();
             $table->string('fotoEvidencia')->nullable();

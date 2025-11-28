@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('asignaciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idPaquete')->constrained('paquetes')->cascadeOnDelete();
-            $table->foreignId('idMotorista')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('idVehiculo')->constrained('vehiculos')->cascadeOnDelete();
+            $table->foreignId('idPaquete')->nullable()->constrained('paquetes')->cascadeOnDelete();
+            $table->foreignId('idMotorista')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('idVehiculo')->nullable()->constrained('vehiculos')->cascadeOnDelete();
             $table->dateTime('fechaAsignacion')->nullable();
             $table->timestamps();
         });
