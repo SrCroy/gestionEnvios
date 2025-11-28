@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('rutas_puntos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('idRuta')->constrained('rutas')->cascadeOnDelete();
+            $table->foreignId('idPaquete')->constrained('paquetes')->cascadeOnDelete();
+            $table->string('tipo', 50);
+            $table->decimal('latitud', 10, 7);
+            $table->decimal('longitud', 10, 7);
+            $table->integer('orden');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('rutas_puntos');
+    }
+};
