@@ -22,17 +22,28 @@ class ClientesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function store()
     {
-        //
+        return view('clientes.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        //
+        $cliente = new clientes();
+
+        $cliente->nombre = $request->nombre;
+        $cliente->email = $request->email;
+        $cliente->telefono = $request->telefono;
+        $cliente->direccion = $request->direccion;
+        $cliente->latitud = $request->latitud;
+        $cliente->longitud = $request->longitud;
+
+        $cliente->save();
+
+        return redirect()->route('clientes.index');
     }
 
     /**

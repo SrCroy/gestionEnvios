@@ -8,6 +8,7 @@
     <title>{{ $titulo }}</title>
 </head>
 <body class="bg-gray">
+    <a href={{ route('clientes.create') }} class="btn btn-success">Agregar Cliente</a>
     <table class="fs-6 overflow-auto">
         <thead>
             <th>id</th>
