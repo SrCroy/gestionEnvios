@@ -17,9 +17,24 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Crear usuario de administrador por defecto
         User::factory()->create([
-            'name' => 'Test User',
+            'name' => 'Administrador UES',
+            'email' => 'admin@uesfmo.com',
+            'password' => bcrypt('admin1234'),
+        ]);
+
+        User::factory()->create([
+            'name' => 'Motorista',
+            'email' => 'motorista@uesfmo.com',
+            'password' => bcrypt('motorista1234'),
+        ]);
+
+        // Usuario de prueba
+        User::factory()->create([
+            'name' => 'Usuario Prueba',
             'email' => 'test@example.com',
+            'password' => bcrypt('12345678'),
         ]);
     }
 }
