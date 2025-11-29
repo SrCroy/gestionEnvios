@@ -8,4 +8,6 @@ Route::get('/', function () {
     return view('home.dashboard');
 });
 
-Route::resource('vehiculos', VehiculoController::class);
+Route::get('/vehiculos', function () {
+    return view('vehiculos.index');
+})->name('vehiculos.index');

@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <base href="{{ url('/') }}/">
     <title>@yield('title', 'UES FMO - Gestor de Paquetes')</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Livewire Styles - Manual -->
+    <style>[wire\:loading], [wire\:loading\.delay], [wire\:loading\.inline-block], [wire\:loading\.inline], [wire\:loading\.block], [wire\:loading\.flex], [wire\:loading\.table], [wire\:loading\.grid], [wire\:loading\.inline-flex] {display: none;}[wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short], [wire\:loading\.delay\.long], [wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest] {display:none;}[wire\:offline] {display: none;}[wire\:dirty]:not(textarea):not(input):not(select) {display: none;}input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {animation-duration: 50000s;animation-name: livewireautofill;}@keyframes livewireautofill { from {} }</style>
     
     <style>
         :root {
@@ -191,8 +196,22 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap JS Bundle (incluye Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Livewire Scripts con ruta absoluta -->
+    <script src="{{ asset('vendor/livewire/livewire.js') }}" data-turbo-eval="false" data-turbolinks-eval="false" data-update-uri="{{ url('/livewire/update') }}" data-csrf="{{ csrf_token() }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.Livewire !== 'undefined') {
+                console.log('Livewire cargado correctamente');
+                console.log('Base URL:', '{{ url("/") }}');
+                console.log('Update URI:', '{{ url("/livewire/update") }}');
+            } else {
+                console.error('ERROR: Livewire no se cargó');
+            }
+        });
+    </script>
     
     <script>
         // Mobile sidebar toggle

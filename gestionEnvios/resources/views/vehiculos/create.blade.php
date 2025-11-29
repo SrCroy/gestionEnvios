@@ -125,21 +125,6 @@
                             @enderror
                             <small class="text-muted">Capacidad volumétrica en metros cúbicos</small>
                         </div>
-
-                        <!-- Estado - Informativo (no editable) -->
-                        <!-- <div class="col-md-12 mb-3">
-                            <label class="form-label">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Estado Inicial
-                            </label>
-                            <div class="alert alert-success d-flex align-items-center mb-0">
-                                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-                                <div>
-                                    <strong>Disponible</strong>
-                                    <p class="mb-0 small">El vehículo se registrará como disponible y listo para ser asignado a rutas.</p>
-                                </div>
-                            </div>
-                        </div> -->
                     </div>
 
                     <!-- Botones -->

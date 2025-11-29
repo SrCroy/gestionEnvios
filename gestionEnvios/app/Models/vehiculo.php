@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class vehiculo extends Model
 {
-    //
     protected $table = "vehiculos";
     
     protected $fillable = [
@@ -60,6 +59,20 @@ class vehiculo extends Model
             self::ESTADO_MANTENIMIENTO => 'warning',
             self::ESTADO_FUERA_SERVICIO => 'danger',
             default => 'secondary'
+        };
+    }
+
+    /**
+     * Obtener icono según el estado
+     */
+    public function getEstadoIconoAttribute()
+    {
+        return match($this->estado) {
+            self::ESTADO_DISPONIBLE => 'check-circle-fill',
+            self::ESTADO_EN_RUTA => 'truck',
+            self::ESTADO_MANTENIMIENTO => 'wrench',
+            self::ESTADO_FUERA_SERVICIO => 'x-circle-fill',
+            default => 'circle'
         };
     }
 }

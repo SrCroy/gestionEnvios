@@ -3,15 +3,6 @@
 @section('title', 'Editar Vehículo - UES FMO')
 
 @section('content')
-<!-- Breadcrumb -->
-<!-- <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('vehiculos.index') }}">Vehículos</a></li>
-        <li class="breadcrumb-item active">Editar #{{ $vehiculo->id }}</li>
-    </ol>
-</nav> -->
-
 <!-- Header -->
 <div class="ues-header">
     <div class="row align-items-center">
@@ -37,7 +28,6 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white">
                 <h5 class="mb-0">
-                    <!-- <i class="bi bi-truck me-2" style="color: var(--ues-color);"></i> -->
                     Datos del Vehículo
                 </h5>
             </div>
@@ -66,7 +56,6 @@
                         <!-- Marca -->
                         <div class="col-md-6 mb-3">
                             <label for="marca" class="form-label">
-                                <!-- <i class="bi bi-tag me-1"></i> -->
                                 Marca <span class="text-danger">*</span>
                             </label>
                             <input type="text" 
@@ -84,7 +73,6 @@
                         <!-- Modelo -->
                         <div class="col-md-6 mb-3">
                             <label for="modelo" class="form-label">
-                                <!-- <i class="bi bi-car-front me-1"></i> -->
                                 Modelo <span class="text-danger">*</span>
                             </label>
                             <input type="text" 
@@ -102,7 +90,6 @@
                         <!-- Peso Máximo -->
                         <div class="col-md-6 mb-3">
                             <label for="pesoMaximo" class="form-label">
-                                <!-- <i class="bi bi-box-seam me-1"></i> -->
                                 Peso Máximo (kg) <span class="text-danger">*</span>
                             </label>
                             <input type="number" 
@@ -123,7 +110,6 @@
                         <!-- Volumen Máximo -->
                         <div class="col-md-6 mb-3">
                             <label for="volumenMaximo" class="form-label">
-                                <!-- <i class="bi bi-grid-3x3 me-1"></i> -->
                                 Volumen Máximo (m³) <span class="text-danger">*</span>
                             </label>
                             <input type="number" 
@@ -144,7 +130,6 @@
                         <!-- Estado -->
                         <div class="col-md-12 mb-3">
                             <label for="estado" class="form-label">
-                                <!-- <i class="bi bi-circle-fill me-1"></i> -->
                                 Estado <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('estado') is-invalid @enderror" 
@@ -165,28 +150,12 @@
                         </div>
                     </div>
 
-                    <!-- Información del Registro -->
-                    <!-- <div class="alert alert-light border">
-                        <div class="row small">
-                            <div class="col-md-6">
-                                <i class="bi bi-calendar-plus me-2"></i>
-                                <strong>Creado:</strong> {{ $vehiculo->created_at->format('d/m/Y H:i') }}
-                            </div>
-                            <div class="col-md-6">
-                                <i class="bi bi-calendar-check me-2"></i>
-                                <strong>Última actualización:</strong> {{ $vehiculo->updated_at->format('d/m/Y H:i') }}
-                            </div>
-                        </div>
-                    </div> -->
-
                     <!-- Botones -->
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('vehiculos.index') }}" class="btn btn-secondary">
-                            <!-- <i class="bi bi-x-circle me-2"></i> -->
                             Cancelar
                         </a>
                         <button type="submit" class="btn btn-warning">
-                            <!-- <i class="bi bi-check-circle me-2"></i> -->
                             Actualizar Vehículo
                         </button>
                     </div>
