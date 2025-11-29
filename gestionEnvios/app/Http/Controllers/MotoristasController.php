@@ -26,10 +26,6 @@ class MotoristasController extends Controller
     public function create()
     {
         //
-
-        $motoristas = User::where('rol', 'Motorista')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
         return view("motoristas.CreateMotorista");
     }
 
@@ -46,7 +42,7 @@ class MotoristasController extends Controller
                 'emailMotorista' => 'required|email|max:255|unique:users,email',
                 'direccionMotorista' => 'required|string|max:255',
                 'telefonoMotorista' => 'required|string|min:8|max:255|regex:/^[0-9\-\+\(\)\s]+$/',
-                'passwordMotorista' => 'required|string|min:8'
+                'passwordMotorista' => 'required|string|min:8|confirmed'
             ],
             [
                 // Validaciones para nombre
@@ -76,6 +72,7 @@ class MotoristasController extends Controller
                 'passwordMotorista.required' => 'Por favor ingresa una contraseña.',
                 'passwordMotorista.string' => 'La contraseña debe ser texto válido.',
                 'passwordMotorista.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'passwordMotorista.confirmed' => 'Las contraseñas no coinciden'
             ]
         );
 
@@ -102,18 +99,89 @@ class MotoristasController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($encryptedId)
     {
-        //
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Exception $e) {
+            return redirect()->route('motoristas.index')
+                ->with('error', 'ID inválido');
+        }
+
+        $motorista = User::findOrFail($id);
+
+        return view('motoristas.edit', compact('motorista'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $encryptedId)
     {
-        //
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Exception $e) {
+            return redirect()->route('motoristas.index')
+                ->with('error', 'ID inválido');
+        }
+
+        $motorista = User::findOrFail($id);
+
+        $request->validate(
+            [
+                'nombreMotorista' => 'required|string|max:255',
+                'emailMotorista' => 'required|email|unique:users,email,' . $motorista->id,
+                'direccionMotorista' => 'required|string|max:255',
+                'telefonoMotorista' => 'required|string|min:8',
+                'passwordMotorista' => 'nullable|string|min:8|confirmed'
+            ],
+            [
+                // Validaciones para nombre
+                'nombreMotorista.required' => 'Por favor ingresa el nombre del motorista.',
+                'nombreMotorista.string' => 'El nombre debe ser texto válido.',
+                'nombreMotorista.max' => 'El nombre no puede tener más de 255 caracteres.',
+
+                // Validaciones para email
+                'emailMotorista.required' => 'Por favor ingresa el correo electrónico.',
+                'emailMotorista.email' => 'El correo electrónico debe ser válido.',
+                'emailMotorista.max' => 'El correo no puede tener más de 255 caracteres.',
+                'emailMotorista.unique' => 'Este correo electrónico ya está registrado.',
+
+                // Validaciones para direccion
+                'direccionMotorista.required' => 'Por favor ingresa la dirección del motorista.',
+                'direccionMotorista.string' => 'La dirección debe ser texto válido.',
+                'direccionMotorista.max' => 'La dirección no puede tener más de 255 caracteres.',
+
+                // Validaciones para telefono
+                'telefonoMotorista.required' => 'Por favor ingresa el número de teléfono.',
+                'telefonoMotorista.string' => 'El teléfono debe ser texto válido.',
+                'telefonoMotorista.min' => 'El teléfono debe tener al menos 8 dígitos.',
+                'telefonoMotorista.max' => 'El teléfono no puede tener más de 15 caracteres.',
+                'telefonoMotorista.regex' => 'El formato del teléfono no es válido.',
+
+                // Validaciones para contraseña
+                'passwordMotorista.string' => 'La contraseña debe ser texto válido.',
+                'passwordMotorista.min' => 'La contraseña debe tener al menos 8 caracteres.',
+                'passwordMotorista.confirmed' => 'Las contraseñas no coinciden'
+            ]
+        );
+
+        $motorista->name = $request->nombreMotorista;
+        $motorista->email = $request->emailMotorista;
+        $motorista->telefono = $request->telefonoMotorista;
+        $motorista->direccion = $request->direccionMotorista;
+
+        if ($request->filled('passwordMotorista')) {
+            $motorista->password = Hash::make($request->passwordMotorista);
+        }
+
+        $motorista->save();
+
+        return redirect()->route('motoristas.index')
+            ->with('success', 'Motorista actualizado correctamente');
     }
+
+
 
     /**
      * Remove the specified resource from storage.
