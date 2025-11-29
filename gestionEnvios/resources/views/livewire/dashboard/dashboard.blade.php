@@ -36,7 +36,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h4>1,248</h4>
+                            <h4>{{ $stats['total_paquetes'] ?? 1248 }}</h4>
                             <p>Paquetes Total</p>
                         </div>
                         <div class="align-self-center">
@@ -51,7 +51,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h4>856</h4>
+                            <h4>{{ $stats['entregados_hoy'] ?? 856 }}</h4>
                             <p>Entregados Hoy</p>
                         </div>
                         <div class="align-self-center">
@@ -66,7 +66,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h4>289</h4>
+                            <h4>{{ $stats['en_transito'] ?? 289 }}</h4>
                             <p>En Tránsito</p>
                         </div>
                         <div class="align-self-center">
@@ -81,7 +81,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h4>12</h4>
+                            <h4>{{ $stats['vehiculos_activos'] ?? 12 }}</h4>
                             <p>Vehículos Activos</p>
                         </div>
                         <div class="align-self-center">
@@ -127,7 +127,7 @@
                                 <div class="mt-2">
                                     <div class="d-flex justify-content-between border-bottom py-2">
                                         <span>
-                                            <strong>Ruta a San Miguel Centro</strong><br>
+                                            <strong>🚚 Ruta a San Miguel Centro</strong><br>
                                             <small>UES FMO → Carretera → Centro Ciudad</small>
                                         </span>
                                         <span class="badge bg-success">18.5 km</span>
@@ -135,7 +135,7 @@
                                     
                                     <div class="d-flex justify-content-between border-bottom py-2 mt-2">
                                         <span>
-                                            <strong>Ruta a Ciudad Universitaria</strong><br>
+                                            <strong>🚚 Ruta a Ciudad Universitaria</strong><br>
                                             <small>UES FMO → Carretera → Campus Principal</small>
                                         </span>
                                         <span class="badge bg-warning">12.3 km</span>
@@ -143,7 +143,7 @@
                                     
                                     <div class="d-flex justify-content-between py-2 mt-2">
                                         <span>
-                                            <strong>Ruta a Pueblos Cercanos</strong><br>
+                                            <strong>🚚 Ruta a Pueblos Cercanos</strong><br>
                                             <small>UES FMO → Carretera al Cuco → Pueblos</small>
                                         </span>
                                         <span class="badge bg-primary">8.7 km</span>
@@ -159,27 +159,27 @@
                                 </h6>
                                 <div class="mt-2">
                                     <div class="mb-2">
-                                        <strong>Institución:</strong> 
+                                        <strong>🏫 Institución:</strong> 
                                         <span>Universidad de El Salvador</span>
                                     </div>
                                     <div class="mb-2">
-                                        <strong>Facultad:</strong> 
+                                        <strong>📍 Facultad:</strong> 
                                         <span>Multidisciplinaria Oriental</span>
                                     </div>
                                     <div class="mb-2">
-                                        <strong>Dirección Exacta:</strong> 
+                                        <strong>🗺️ Dirección Exacta:</strong> 
                                         <span>Carretera al Cuco Km 144, San Miguel</span>
                                     </div>
                                     <div class="mb-2">
-                                        <strong>Coordenadas:</strong> 
+                                        <strong>📍 Coordenadas:</strong> 
                                         <span>13.439920, -88.158602</span>
                                     </div>
                                     <div class="mb-2">
-                                        <strong>Capacidad:</strong> 
+                                        <strong>📦 Capacidad:</strong> 
                                         <span>1,500 paquetes/día</span>
                                     </div>
                                     <div>
-                                        <strong>Flota:</strong> 
+                                        <strong>🚚 Flota:</strong> 
                                         <span>10 vehículos de reparto</span>
                                     </div>
                                 </div>
@@ -233,11 +233,11 @@
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-4">
-                            <h4 class="text-primary">856</h4>
+                            <h4 class="text-primary">{{ $stats['entregados_hoy'] ?? 856 }}</h4>
                             <small>Entregados</small>
                         </div>
                         <div class="col-4">
-                            <h4 class="text-warning">289</h4>
+                            <h4 class="text-warning">{{ $stats['en_transito'] ?? 289 }}</h4>
                             <small>En camino</small>
                         </div>
                         <div class="col-4">
@@ -344,7 +344,7 @@
                         <p class="mb-0"><strong>🚚 Flota:</strong> 10 vehículos</p>
                         <div class="mt-2">
                             <span class="badge bg-primary">UBICACIÓN EXACTA</span>
-                            <span class="badge bg-success">CARREtera AL CUCO</span>
+                            <span class="badge bg-success">CARRETERA AL CUCO</span>
                         </div>
                     </div>
                 `
