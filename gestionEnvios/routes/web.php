@@ -7,4 +7,7 @@ Route::get('/', function () {
     return view('home.dashboard');
 });
 
-Route::resource("motoristas", MotoristasController::class);
+// Reemplaza las rutas resource por esta única ruta
+Route::get('/motoristas', App\Livewire\Motoristas\Motoristas::class)->name('motoristas.index');Route::get('/motoristas', function () {
+    return view('motoristas.MotoristasIndex');
+})->name('motoristas.index');
