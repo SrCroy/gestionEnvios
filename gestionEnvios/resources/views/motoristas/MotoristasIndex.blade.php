@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UES FMO - Gestor de Paquetes</title>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -17,7 +18,7 @@
             --accent-color: #3498db;
             --ues-color: #0056b3;
         }
-        
+
         .sidebar {
             min-height: 100vh;
             background: var(--ues-color);
@@ -25,68 +26,82 @@
             width: 250px;
             z-index: 1000;
         }
+
         .sidebar .nav-link {
             color: #ecf0f1;
             padding: 15px 20px;
             border-left: 4px solid transparent;
             transition: all 0.3s;
         }
+
         .sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-left: 4px solid #FFD700;
         }
+
         .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             border-left: 4px solid #FFD700;
         }
+
         .sidebar .nav-link i {
             margin-right: 10px;
             width: 20px;
             text-align: center;
         }
+
         .content {
             margin-left: 250px;
             background: #f8f9fa;
             min-height: 100vh;
         }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 transform: translateX(-100%);
             }
+
             .sidebar.show {
                 transform: translateX(0);
             }
+
             .content {
                 margin-left: 0;
             }
         }
+
         .navbar-brand {
             font-weight: bold;
         }
+
         .stat-card {
             border-radius: 10px;
             transition: transform 0.3s;
             border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
+
         #map {
             height: 500px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             border: 3px solid var(--ues-color);
         }
+
         .route-info {
             background: white;
             border-radius: 8px;
             padding: 15px;
             margin-top: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .ues-badge {
             background: #FFD700;
             color: #000;
@@ -95,6 +110,7 @@
             font-size: 12px;
             font-weight: bold;
         }
+
         .ues-header {
             background: linear-gradient(135deg, var(--ues-color) 0%, #003d82 100%);
             color: white;
@@ -104,6 +120,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar Estático -->
     <div class="sidebar p-0">
@@ -138,7 +155,7 @@
                 <i class="bi bi-graph-up"></i>Reportes
             </a>
         </nav>
-        
+
         <!-- System Status -->
         <div class="p-3 mt-auto border-top border-light">
             <div class="text-white-50 small">
@@ -170,7 +187,7 @@
                     <i class="bi bi-building me-2"></i>
                     UES FMO - Centro de Distribución
                 </span>
-                
+
                 <div class="navbar-nav ms-auto">
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -180,7 +197,9 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
                         </ul>
                     </div>
@@ -190,12 +209,119 @@
 
         <!-- Page Content -->
         <div class="container-fluid p-4">
-            
-        </div>
-    </div>
+            <div class="ues-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-2">
+                            <i class="bi bi-person-plus"></i>
+                            GESTIÓN DE MOTORISTAS
+                        </h3>
+                        <p class="mb-0">Administra todos los motoristas registrados en el sistema.</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a href="{{ route("motoristas.create") }}" class="btn btn-warning">
+                            <i class="bi bi-plus-circle"></i>
+                            Nuevo Motorista
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>    
-    
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-circle"></i> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    @if($motoristas->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha Registro</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($motoristas as $motorista)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $motorista->name }}</strong>
+                                    </td>
+                                    <td>{{ $motorista->email }}</td>
+                                    <td>{{ $motorista->telefono }}</td>
+                                    <td>{{ Str::limit($motorista->direccion, 40) }}</td>
+                                    <td>{{ $motorista->created_at->format('d/m/Y') }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group">
+                                            <!-- Botón Ver -->
+                                          <!--  <a href="{{ route('motoristas.show', $motorista->id) }}"
+                                                class="btn btn-sm btn-info"
+                                                title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>-->
+
+                                            <!-- Botón Editar -->
+                                            <a href="{{ route('motoristas.edit', $motorista->id) }}"
+                                                class="btn btn-sm btn-warning"
+                                                title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+
+                                            <!-- Botón Eliminar -->
+                                            <form action="{{ route('motoristas.destroy', $motorista->id) }}"
+                                                method="POST"
+                                                class="d-inline"
+                                                onsubmit="return confirm('¿Estás seguro de eliminar a {{ $motorista->nombre }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-danger"
+                                                    title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $motoristas->links() }}
+                    </div>
+                    @else
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                        <p class="mt-3 text-muted">No hay motoristas registrados</p>
+                        <a href="{{ route('motoristas.create') }}" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i>
+                            Registrar Primer Motorista
+                        </a>
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+
+            <!-- Bootstrap JS -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
+
 </html>
