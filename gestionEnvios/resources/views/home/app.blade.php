@@ -1,20 +1,63 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <base href="{{ url('/') }}/">
     <title>@yield('title', 'UES FMO - Gestor de Paquetes')</title>
-    
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
     <!-- Livewire Styles - Manual -->
-    <style>[wire\:loading], [wire\:loading\.delay], [wire\:loading\.inline-block], [wire\:loading\.inline], [wire\:loading\.block], [wire\:loading\.flex], [wire\:loading\.table], [wire\:loading\.grid], [wire\:loading\.inline-flex] {display: none;}[wire\:loading\.delay\.shortest], [wire\:loading\.delay\.shorter], [wire\:loading\.delay\.short], [wire\:loading\.delay\.long], [wire\:loading\.delay\.longer], [wire\:loading\.delay\.longest] {display:none;}[wire\:offline] {display: none;}[wire\:dirty]:not(textarea):not(input):not(select) {display: none;}input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {animation-duration: 50000s;animation-name: livewireautofill;}@keyframes livewireautofill { from {} }</style>
-    
+    <style>
+        [wire\:loading],
+        [wire\:loading\.delay],
+        [wire\:loading\.inline-block],
+        [wire\:loading\.inline],
+        [wire\:loading\.block],
+        [wire\:loading\.flex],
+        [wire\:loading\.table],
+        [wire\:loading\.grid],
+        [wire\:loading\.inline-flex] {
+            display: none;
+        }
+
+        [wire\:loading\.delay\.shortest],
+        [wire\:loading\.delay\.shorter],
+        [wire\:loading\.delay\.short],
+        [wire\:loading\.delay\.long],
+        [wire\:loading\.delay\.longer],
+        [wire\:loading\.delay\.longest] {
+            display: none;
+        }
+
+        [wire\:offline] {
+            display: none;
+        }
+
+        [wire\:dirty]:not(textarea):not(input):not(select) {
+            display: none;
+        }
+
+        input:-webkit-autofill,
+        select:-webkit-autofill,
+        textarea:-webkit-autofill {
+            animation-duration: 50000s;
+            animation-name: livewireautofill;
+        }
+
+        @keyframes livewireautofill {
+            from {}
+        }
+    </style>
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -22,7 +65,7 @@
             --accent-color: #3498db;
             --ues-color: #0056b3;
         }
-        
+
         .sidebar {
             min-height: 100vh;
             background: var(--ues-color);
@@ -30,56 +73,68 @@
             width: 250px;
             z-index: 1000;
         }
+
         .sidebar .nav-link {
             color: #ecf0f1;
             padding: 15px 20px;
             border-left: 4px solid transparent;
             transition: all 0.3s;
         }
+
         .sidebar .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-left: 4px solid #FFD700;
         }
+
         .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             border-left: 4px solid #FFD700;
         }
+
         .sidebar .nav-link i {
             margin-right: 10px;
             width: 20px;
             text-align: center;
         }
+
         .content {
             margin-left: 250px;
             background: #f8f9fa;
             min-height: 100vh;
         }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 transform: translateX(-100%);
                 transition: transform 0.3s;
             }
+
             .sidebar.show {
                 transform: translateX(0);
             }
+
             .content {
                 margin-left: 0;
             }
         }
+
         .navbar-brand {
             font-weight: bold;
         }
+
         .stat-card {
             border-radius: 10px;
             transition: transform 0.3s;
             border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
+
         .ues-badge {
             background: #FFD700;
             color: #000;
@@ -88,6 +143,7 @@
             font-size: 12px;
             font-weight: bold;
         }
+
         .ues-header {
             background: linear-gradient(135deg, var(--ues-color) 0%, #003d82 100%);
             color: white;
@@ -95,17 +151,38 @@
             padding: 20px;
             margin-bottom: 20px;
         }
+
         .table-responsive {
             border-radius: 10px;
             overflow: hidden;
         }
+
         .btn-action {
             padding: 5px 10px;
             font-size: 14px;
         }
     </style>
+    @push('styles')
+    <style>
+        /* Estilos personalizados para Toastify */
+        .toastify {
+            padding: 16px 20px;
+            color: #ffffff;
+            border-radius: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .toastify.on {
+            opacity: 1;
+        }
+    </style>
+    @endpush
     @stack('styles')
 </head>
+
 <body>
     <!-- Sidebar Estático -->
     <div class="sidebar p-0" id="sidebar">
@@ -140,7 +217,7 @@
                 <i class="bi bi-graph-up"></i>Reportes
             </a>
         </nav>
-        
+
         <!-- System Status -->
         <div class="p-3 mt-auto border-top border-light">
             <div class="text-white-50 small">
@@ -172,18 +249,27 @@
                     <i class="bi bi-building me-2"></i>
                     UES FMO - Centro de Distribución
                 </span>
-                
+
                 <div class="navbar-nav ms-auto">
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle me-1"></i>
-                            Administrador
+                            {{ Auth::user()->name ?? 'Administrador' }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -198,7 +284,9 @@
 
     <!-- Bootstrap JS Bundle (incluye Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <!-- Livewire Scripts con ruta absoluta -->
     <script src="{{ asset('vendor/livewire/livewire.js') }}" data-turbo-eval="false" data-turbolinks-eval="false" data-update-uri="{{ url('/livewire/update') }}" data-csrf="{{ csrf_token() }}"></script>
     <script>
@@ -212,7 +300,7 @@
             }
         });
     </script>
-    
+
     <script>
         // Mobile sidebar toggle
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
@@ -229,7 +317,56 @@
             });
         }, 5000);
     </script>
-    
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('toast', (event) => {
+                // Extraer los datos correctamente
+                const data = event[0] || event;
+                const message = data.message || 'Notificación';
+                const type = data.type || 'info';
+
+                let backgroundColor;
+
+                // Colores según el tipo
+                switch (type) {
+                    case 'success':
+                        backgroundColor = "linear-gradient(to right, #00b09b, #96c93d)";
+                        break;
+                    case 'error':
+                        backgroundColor = "linear-gradient(to right, #ff5f6d, #ffc371)";
+                        break;
+                    case 'info':
+                        backgroundColor = "linear-gradient(to right, #2193b0, #6dd5ed)";
+                        break;
+                    case 'warning':
+                        backgroundColor = "linear-gradient(to right, #f2994a, #f2c94c)";
+                        break;
+                    default:
+                        backgroundColor = "linear-gradient(to right, #00b09b, #96c93d)";
+                }
+
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    stopOnFocus: true,
+                    style: {
+                        background: backgroundColor,
+                        borderRadius: "8px",
+                        padding: "16px 20px",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)"
+                    }
+                }).showToast();
+            });
+        });
+    </script>
+
     @stack('scripts')
 </body>
+
 </html>

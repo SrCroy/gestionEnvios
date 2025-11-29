@@ -3,5 +3,5 @@
 @section('title', 'Gestión de Vehículos - UES FMO')
 
 @section('content')
-    @livewire('vehiculos-index')
+    @livewire('vehiculos.vehiculos-index')
 @endsection

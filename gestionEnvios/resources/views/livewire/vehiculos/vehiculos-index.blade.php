@@ -1,4 +1,12 @@
 <div>
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+    </style>
+    
     <!-- UES Header -->
     <div class="ues-header">
         <div class="row align-items-center">
@@ -17,23 +25,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Alerts -->
-    @if (session()->has('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    @if (session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
 
     <!-- Stats Cards -->
     <div class="row mb-4">
@@ -122,24 +113,24 @@
     <div class="card border-0 shadow-sm mb-3">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2">
-                <button wire:click="setFiltro('todos')" 
-                        class="btn btn-sm btn-outline-secondary {{ $filtroEstado === 'todos' ? 'active' : '' }}">
+                <button wire:click="setFiltro('todos')"
+                    class="btn btn-sm btn-outline-secondary {{ $filtroEstado === 'todos' ? 'active' : '' }}">
                     <i class="bi bi-list-ul me-1"></i> Todos ({{ $stats['total'] }})
                 </button>
-                <button wire:click="setFiltro('Disponible')" 
-                        class="btn btn-sm btn-outline-success {{ $filtroEstado === 'Disponible' ? 'active' : '' }}">
+                <button wire:click="setFiltro('Disponible')"
+                    class="btn btn-sm btn-outline-success {{ $filtroEstado === 'Disponible' ? 'active' : '' }}">
                     <i class="bi bi-check-circle me-1"></i> Disponibles ({{ $stats['disponibles'] }})
                 </button>
-                <button wire:click="setFiltro('En Ruta')" 
-                        class="btn btn-sm btn-outline-primary {{ $filtroEstado === 'En Ruta' ? 'active' : '' }}">
+                <button wire:click="setFiltro('En Ruta')"
+                    class="btn btn-sm btn-outline-primary {{ $filtroEstado === 'En Ruta' ? 'active' : '' }}">
                     <i class="bi bi-truck me-1"></i> En Ruta ({{ $stats['en_ruta'] }})
                 </button>
-                <button wire:click="setFiltro('Mantenimiento')" 
-                        class="btn btn-sm btn-outline-warning {{ $filtroEstado === 'Mantenimiento' ? 'active' : '' }}">
+                <button wire:click="setFiltro('Mantenimiento')"
+                    class="btn btn-sm btn-outline-warning {{ $filtroEstado === 'Mantenimiento' ? 'active' : '' }}">
                     <i class="bi bi-wrench me-1"></i> Mantenimiento ({{ $stats['mantenimiento'] }})
                 </button>
-                <button wire:click="setFiltro('Fuera de Servicio')" 
-                        class="btn btn-sm btn-outline-danger {{ $filtroEstado === 'Fuera de Servicio' ? 'active' : '' }}">
+                <button wire:click="setFiltro('Fuera de Servicio')"
+                    class="btn btn-sm btn-outline-danger {{ $filtroEstado === 'Fuera de Servicio' ? 'active' : '' }}">
                     <i class="bi bi-x-circle me-1"></i> Fuera de Servicio ({{ $stats['fuera_servicio'] }})
                 </button>
             </div>
@@ -171,43 +162,43 @@
                     </thead>
                     <tbody>
                         @forelse($vehiculos as $vehiculo)
-                            <tr wire:key="vehiculo-{{ $vehiculo->id }}">
-                                <td>{{ $vehiculo->id }}</td>
-                                <td><strong>{{ $vehiculo->marca }}</strong></td>
-                                <td>{{ $vehiculo->modelo }}</td>
-                                <td>{{ number_format($vehiculo->pesoMaximo, 2) }} kg</td>
-                                <td>{{ number_format($vehiculo->volumenMaximo, 2) }} m³</td>
-                                <td>
-                                    <span class="badge bg-{{ $vehiculo->estadoBadge }}">
-                                        {{ $vehiculo->estado }}
-                                    </span>
-                                </td>
-                                <td>{{ $vehiculo->created_at->format('d/m/Y') }}</td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <button wire:click="edit({{ $vehiculo->id }})" 
-                                                class="btn btn-sm btn-warning btn-action" 
-                                                title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button wire:click="confirmDelete({{ $vehiculo->id }})" 
-                                                class="btn btn-sm btn-danger btn-action" 
-                                                title="Eliminar">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-4">
-                                    <i class="bi bi-inbox display-4 text-muted"></i>
-                                    <p class="mt-2 text-muted">No hay vehículos registrados</p>
-                                    <button wire:click="create" class="btn btn-primary">
-                                        <i class="bi bi-plus-circle me-2"></i>Registrar Primer Vehículo
+                        <tr wire:key="vehiculo-{{ $vehiculo->id }}">
+                            <td>{{ $vehiculo->id }}</td>
+                            <td><strong>{{ $vehiculo->marca }}</strong></td>
+                            <td>{{ $vehiculo->modelo }}</td>
+                            <td>{{ number_format($vehiculo->pesoMaximo, 2) }} kg</td>
+                            <td>{{ number_format($vehiculo->volumenMaximo, 2) }} m³</td>
+                            <td>
+                                <span class="badge bg-{{ $vehiculo->estadoBadge }}">
+                                    {{ $vehiculo->estado }}
+                                </span>
+                            </td>
+                            <td>{{ $vehiculo->created_at->format('d/m/Y') }}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <button wire:click="edit({{ $vehiculo->id }})"
+                                        class="btn btn-sm btn-warning btn-action"
+                                        title="Editar">
+                                        <i class="bi bi-pencil"></i>
                                     </button>
-                                </td>
-                            </tr>
+                                    <button wire:click="confirmDelete({{ $vehiculo->id }})"
+                                        class="btn btn-sm btn-danger btn-action"
+                                        title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <i class="bi bi-inbox display-4 text-muted"></i>
+                                <p class="mt-2 text-muted">No hay vehículos registrados</p>
+                                <button wire:click="create" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-2"></i>Registrar Primer Vehículo
+                                </button>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -305,7 +296,7 @@
                                 <select wire:model="estado" class="form-select @error('estado') is-invalid @enderror">
                                     <option value="">-- Seleccione --</option>
                                     @foreach($estados as $estadoOption)
-                                        <option value="{{ $estadoOption }}">{{ $estadoOption }}</option>
+                                    <option value="{{ $estadoOption }}">{{ $estadoOption }}</option>
                                     @endforeach
                                 </select>
                                 @error('estado') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -337,11 +328,11 @@
                 </div>
                 <div class="modal-body">
                     @if($vehiculoToDelete)
-                        <p>¿Está seguro de eliminar el vehículo <strong>{{ $vehiculoToDelete->marca }} {{ $vehiculoToDelete->modelo }}</strong>?</p>
-                        <span class="badge bg-{{ $vehiculoToDelete->estadoBadge }} mb-2">
-                            Estado actual: {{ $vehiculoToDelete->estado }}
-                        </span>
-                        <br>
+                    <p>¿Está seguro de eliminar el vehículo <strong>{{ $vehiculoToDelete->marca }} {{ $vehiculoToDelete->modelo }}</strong>?</p>
+                    <span class="badge bg-{{ $vehiculoToDelete->estadoBadge }} mb-2">
+                        Estado actual: {{ $vehiculoToDelete->estado }}
+                    </span>
+                    <br>
                     @endif
                     <span class="text-danger">
                         <i class="bi bi-exclamation-triangle me-1"></i>
@@ -370,7 +361,7 @@
                 const modal = new bootstrap.Modal(document.getElementById(modalId[0]));
                 modal.show();
             });
-            
+
             Livewire.on('closeModal', (modalId) => {
                 const modalElement = document.getElementById(modalId[0]);
                 const modal = bootstrap.Modal.getInstance(modalElement);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\Vehiculos;
 
 use App\Models\vehiculo;
 use Livewire\Component;
@@ -71,7 +71,11 @@ class VehiculosIndex extends Component
         $this->dispatch('closeModal', 'createModal');
         $this->resetForm();
         
-        session()->flash('success', 'Vehículo creado exitosamente y listo para asignación');
+        // ✅ Notificación verde al crear
+        $this->dispatch('toast', [
+            'message' => 'Vehículo agregado exitosamente',
+            'type' => 'success'
+        ]);
     }
     
     // Abrir modal de edición
@@ -102,6 +106,11 @@ class VehiculosIndex extends Component
             $this->estado !== vehiculo::ESTADO_MANTENIMIENTO) {
             
             $this->addError('estado', 'Un vehículo en ruta solo puede pasar a Disponible o Mantenimiento');
+            
+            $this->dispatch('toast', [
+                'message' => 'Transición de estado no permitida',
+                'type' => 'error'
+            ]);
             return;
         }
         
@@ -116,7 +125,11 @@ class VehiculosIndex extends Component
         $this->dispatch('closeModal', 'editModal');
         $this->resetForm();
         
-        session()->flash('success', 'Vehículo actualizado exitosamente');
+        // ✅ Notificación verde al actualizar
+        $this->dispatch('toast', [
+            'message' => 'Vehículo actualizado correctamente',
+            'type' => 'success'
+        ]);
     }
     
     // Confirmar eliminación
@@ -131,24 +144,39 @@ class VehiculosIndex extends Component
     {
         try {
             if ($this->vehiculoToDelete->estado === vehiculo::ESTADO_EN_RUTA) {
-                session()->flash('error', 'No se puede eliminar un vehículo que está en ruta');
+                $this->dispatch('toast', [
+                    'message' => 'No se puede eliminar un vehículo que está en ruta',
+                    'type' => 'error'
+                ]);
                 $this->dispatch('closeModal', 'deleteModal');
                 return;
             }
             
+            $marca = $this->vehiculoToDelete->marca;
+            $modelo = $this->vehiculoToDelete->modelo;
+            
             $this->vehiculoToDelete->delete();
             $this->dispatch('closeModal', 'deleteModal');
             
-            session()->flash('success', 'Vehículo eliminado exitosamente');
+            // ✅ Notificación roja al eliminar
+            $this->dispatch('toast', [
+                'message' => "Vehículo {$marca} {$modelo} eliminado",
+                'type' => 'error'
+            ]);
+            
         } catch (\Exception $e) {
-            session()->flash('error', 'Error al eliminar el vehículo: ' . $e->getMessage());
+            $this->dispatch('toast', [
+                'message' => 'Error al eliminar el vehículo',
+                'type' => 'error'
+            ]);
         }
     }
     
-    // Cambiar filtro de estado
+    // Cambiar filtro de estado (SIN NOTIFICACIÓN)
     public function setFiltro($filtro)
     {
         $this->filtroEstado = $filtro;
+        // ❌ NO mostrar notificación al filtrar
     }
     
     // Resetear formulario
@@ -186,6 +214,6 @@ class VehiculosIndex extends Component
         
         $estados = vehiculo::getEstados();
         
-        return view('livewire.vehiculos-index', compact('vehiculos', 'stats', 'estados'));
+        return view('livewire.vehiculos.vehiculos-index', compact('vehiculos', 'stats', 'estados'));
     }
 }
