@@ -133,7 +133,7 @@
             <a class="nav-link" href="#rutas">
                 <i class="bi bi-map"></i>Rutas
             </a>
-            <a class="nav-link" href="#motoristas">
+            <a class="nav-link" href="motoristas">
                 <i class="bi bi-person-badge"></i>Motoristas
             </a>
             <a class="nav-link" href="#reportes">
