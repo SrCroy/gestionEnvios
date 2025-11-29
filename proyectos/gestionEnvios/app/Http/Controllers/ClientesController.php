@@ -52,7 +52,7 @@ class ClientesController extends Controller
      */
     public function edit(clientes $clientes, $id)
     {
-        $cliente = $clientes::find($id);
+        $cliente = $clientes::findOrFail($id);
 
         $titulo = 'cliente editar';
 
@@ -64,16 +64,10 @@ class ClientesController extends Controller
      */
     public function update(Request $request, $id, clientes $clientes)
     {
-        $cliente = clientes::find($id);
+        $cliente = clientes::findOrFail($id);
 
-        $cliente::fill([
-            'nombre'=>$request->nombre,
-            'telefono'=>$request->telefono,
-            'direccion'=>$request->direccion,
-            'email'=>$request->email,
-            'longitud'=>$request->longitud,
-            'latitud'=>$request->latitud,
-        ]);
+        $cliente->nombre = $request->nombre;
+        //continuar despues
 
         $cliente->save();
 
@@ -81,7 +75,7 @@ class ClientesController extends Controller
 
         $titulo = "clientes";
 
-        return view('clientes.clientes', compact('clientes', 'titulo'));
+         return redirect()->route('clientes.index');
     }
 
     /**

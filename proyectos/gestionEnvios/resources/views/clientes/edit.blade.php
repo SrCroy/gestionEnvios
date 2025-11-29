@@ -9,7 +9,9 @@
 </head>
 <body>
     <div class="d-flex flex-col p-10 bg-info">
-        <form action="" method="post" class="flex flex-col">
+        <form action={{ route('clientes.update', $cliente->id) }} method="post" class="flex flex-col">
+            @csrf
+            @method('PUT')
             <label for="">Nombre</label>
             <input type="text" id="nombre" name="nombre" value={{ $cliente->nombre }}><br>
             <label for="">Direccion</label>
@@ -22,9 +24,11 @@
             <input type="number" step="0.00001" name="latitud" id="latitud" value={{ $cliente->latitud }}><br>
             <label for="">Longitud</label>
             <input type="number" step="0.00001" name="longitud" id="longitud" value={{ $cliente->longitud }}><br>
-            <a href={{ route('clientes.update', $cliente->id) }} class="btn btn-success">Guardar cambios</a>
-            <a href={{ route('clientes.show', $cliente->id) }} class="btn btn-danger">Cancelar/Regresar</a>
+            <button type="submit" class="btn btn-success">
+                Guardar cambios
+            </button>
         </form>
+        <a href={{ route('clientes.show', $cliente->id) }} class="btn btn-danger">Cancelar/Regresar</a>
     </div>
 </body>
 </html>
