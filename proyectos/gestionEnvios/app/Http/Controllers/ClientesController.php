@@ -50,17 +50,38 @@ class ClientesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(clientes $clientes)
+    public function edit(clientes $clientes, $id)
     {
-        //
+        $cliente = $clientes::find($id);
+
+        $titulo = 'cliente editar';
+
+        return view('clientes.edit', compact('cliente', 'titulo'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, clientes $clientes)
+    public function update(Request $request, $id, clientes $clientes)
     {
-        //
+        $cliente = clientes::find($id);
+
+        $cliente::fill([
+            'nombre'=>$request->nombre,
+            'telefono'=>$request->telefono,
+            'direccion'=>$request->direccion,
+            'email'=>$request->email,
+            'longitud'=>$request->longitud,
+            'latitud'=>$request->latitud,
+        ]);
+
+        $cliente->save();
+
+        $clientes = clientes::all();
+
+        $titulo = "clientes";
+
+        return view('clientes.clientes', compact('clientes', 'titulo'));
     }
 
     /**
