@@ -186,8 +186,13 @@ class MotoristasController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($encryptedId)
     {
         //
+            $id = decrypt($encryptedId);
+        $motorista = User::findOrFail($id);
+        $motorista->delete();
+
+        return redirect()->route('motoristas.index')->with('success','Motorista eliminado correctamente');
     }
 }
