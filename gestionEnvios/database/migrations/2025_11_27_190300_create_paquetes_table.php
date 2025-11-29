@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('paquetes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idDestinatario')->constrained('clientes')->onDelete('cascade');
-            $table->foreignId('idRemitente')->constrained('clientes')->onDelete('cascade');
+            $table->foreignId('idDestinatario')->nullable()->constrained('clientes')->onDelete('cascade');
+            $table->foreignId('idRemitente')->nullable()->constrained('clientes')->onDelete('cascade');
             $table->foreignId('idVehiculo')->constrained('vehiculos')->onDelete('cascade');
             $table->string('descripcion');
             $table->decimal('peso', 10, 2);

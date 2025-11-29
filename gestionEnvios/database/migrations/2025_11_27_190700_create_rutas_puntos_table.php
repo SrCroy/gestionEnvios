@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('rutas_puntos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('idRuta')->constrained('rutas')->cascadeOnDelete();
-            $table->foreignId('idPaquete')->constrained('paquetes')->cascadeOnDelete();
+            $table->foreignId('idRuta')->nullable()->constrained('rutas')->cascadeOnDelete();
+            $table->foreignId('idPaquete')->nullable()->constrained('paquetes')->cascadeOnDelete();
             $table->string('tipo', 50);
             $table->decimal('latitud', 10, 7);
             $table->decimal('longitud', 10, 7);
-            $table->integer('orden');
+            $table->integer('orden')->nullable();
             $table->timestamps();
         });
     }
