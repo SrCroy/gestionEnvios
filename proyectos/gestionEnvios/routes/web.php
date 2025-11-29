@@ -15,4 +15,4 @@ Route::get('/clientes/{id}/editar', [ClientesController::class, 'edit'])->name('
 Route::put('/clientes/{id}', [ClientesController::class, 'update'])->name('clientes.update');
 
 Route::get('/clientes/create', [ClientesController::class, 'create'])->name('clientes.create');
-Route::post('/clientes/create', [ClientesController::class, 'store'])->name('clientes.store');
+Route::post('/clientes', [ClientesController::class, 'store'])->name('clientes.store');

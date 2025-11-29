@@ -67,15 +67,17 @@ class ClientesController extends Controller
         $cliente = clientes::findOrFail($id);
 
         $cliente->nombre = $request->nombre;
-        //continuar despues
+        $cliente->telefono = $request->telefono;
+        $cliente->email = $request->email;
+        $cliente->direccion = $request->direccion;
+        $cliente->latitud = $request->latitud;
+        $cliente->longitud = $request->longitud;
 
         $cliente->save();
 
         $clientes = clientes::all();
 
-        $titulo = "clientes";
-
-         return redirect()->route('clientes.index');
+        return redirect()->route('clientes.index');
     }
 
     /**
