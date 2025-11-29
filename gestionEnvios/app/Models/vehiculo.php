@@ -8,6 +8,7 @@ class vehiculo extends Model
 {
     //
     protected $table = "vehiculos";
+    
     protected $fillable = [
         'marca',
         'modelo',
@@ -16,12 +17,30 @@ class vehiculo extends Model
         'estado'
     ];
 
+    // Constantes de estados
     const ESTADO_DISPONIBLE = 'Disponible';
     const ESTADO_EN_RUTA = 'En Ruta';
     const ESTADO_MANTENIMIENTO = 'Mantenimiento';
     const ESTADO_FUERA_SERVICIO = 'Fuera de Servicio';
 
-    public static function getEstados(){
+    // Atributos por defecto
+    protected $attributes = [
+        'estado' => self::ESTADO_DISPONIBLE
+    ];
+
+    // Casting de atributos
+    protected $casts = [
+        'pesoMaximo' => 'decimal:2',
+        'volumenMaximo' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    /**
+     * Obtener array de estados disponibles
+     */
+    public static function getEstados()
+    {
         return [
             self::ESTADO_DISPONIBLE,
             self::ESTADO_EN_RUTA,
@@ -30,12 +49,16 @@ class vehiculo extends Model
         ];
     }
 
-    public function getEstadoBadgeAttribute(){
-        return match($this->estado){
-            self::ESTADO_DISPONIBLE => "success",
-            self::ESTADO_EN_RUTA => "primary",
-            self::ESTADO_MANTENIMIENTO => "warning",
-            self::ESTADO_FUERA_SERVICIO => "danger",
+    /**
+     * Obtener clase CSS del badge según el estado
+     */
+    public function getEstadoBadgeAttribute()
+    {
+        return match($this->estado) {
+            self::ESTADO_DISPONIBLE => 'success',
+            self::ESTADO_EN_RUTA => 'primary',
+            self::ESTADO_MANTENIMIENTO => 'warning',
+            self::ESTADO_FUERA_SERVICIO => 'danger',
             default => 'secondary'
         };
     }

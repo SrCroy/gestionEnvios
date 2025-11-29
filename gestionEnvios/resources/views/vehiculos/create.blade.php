@@ -3,15 +3,6 @@
 @section('title', 'Crear Vehículo - UES FMO')
 
 @section('content')
-<!-- Breadcrumb -->
-<!-- <nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('vehiculos.index') }}">Vehículos</a></li>
-        <li class="breadcrumb-item active">Crear Nuevo</li>
-    </ol>
-</nav> -->
-
 <!-- Header -->
 <div class="ues-header">
     <div class="row align-items-center">
@@ -20,7 +11,7 @@
                 <i class="bi bi-plus-circle me-2"></i>
                 REGISTRAR NUEVO VEHÍCULO
             </h3>
-            <p class="mb-0">Complete el formulario para agregar un vehículo</p>
+            <p class="mb-0">Complete el formulario para agregar un vehículo a la flota</p>
         </div>
         <div class="col-md-4 text-md-end">
             <a href="{{ route('vehiculos.index') }}" class="btn btn-secondary">
@@ -37,7 +28,6 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white">
                 <h5 class="mb-0">
-                    <!-- <i class="bi bi-truck me-2" style="color: var(--ues-color);"></i> -->
                     Datos del Vehículo
                 </h5>
             </div>
@@ -65,7 +55,6 @@
                         <!-- Marca -->
                         <div class="col-md-6 mb-3">
                             <label for="marca" class="form-label">
-                                <!-- <i class="bi bi-tag me-1"></i> -->
                                 Marca <span class="text-danger">*</span>
                             </label>
                             <input type="text" 
@@ -83,7 +72,6 @@
                         <!-- Modelo -->
                         <div class="col-md-6 mb-3">
                             <label for="modelo" class="form-label">
-                                <!-- <i class="bi bi-car-front me-1"></i> -->
                                 Modelo <span class="text-danger">*</span>
                             </label>
                             <input type="text" 
@@ -101,7 +89,6 @@
                         <!-- Peso Máximo -->
                         <div class="col-md-6 mb-3">
                             <label for="pesoMaximo" class="form-label">
-                                <!-- <i class="bi bi-box-seam me-1"></i> -->
                                 Peso Máximo (kg) <span class="text-danger">*</span>
                             </label>
                             <input type="number" 
@@ -122,7 +109,6 @@
                         <!-- Volumen Máximo -->
                         <div class="col-md-6 mb-3">
                             <label for="volumenMaximo" class="form-label">
-                                <!-- <i class="bi bi-grid-3x3 me-1"></i> -->
                                 Volumen Máximo (m³) <span class="text-danger">*</span>
                             </label>
                             <input type="number" 
@@ -140,43 +126,28 @@
                             <small class="text-muted">Capacidad volumétrica en metros cúbicos</small>
                         </div>
 
-                        <!-- Estado -->
-                        <div class="col-md-12 mb-3">
-                            <label for="estado" class="form-label">
-                                <!-- <i class="bi bi-circle-fill me-1"></i> -->
-                                Estado <span class="text-danger">*</span>
+                        <!-- Estado - Informativo (no editable) -->
+                        <!-- <div class="col-md-12 mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Estado Inicial
                             </label>
-                            <select class="form-select @error('estado') is-invalid @enderror" 
-                                    id="estado" 
-                                    name="estado" 
-                                    required>
-                                <option value="">-- Seleccione un estado --</option>
-                                @foreach($estados as $estado)
-                                    <option value="{{ $estado }}" {{ old('estado') == $estado ? 'selected' : '' }}>
-                                        {{ $estado }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('estado')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                            <div class="alert alert-success d-flex align-items-center mb-0">
+                                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                                <div>
+                                    <strong>Disponible</strong>
+                                    <p class="mb-0 small">El vehículo se registrará como disponible y listo para ser asignado a rutas.</p>
+                                </div>
+                            </div>
+                        </div> -->
                     </div>
 
-                    <!-- Información Adicional -->
-                    <!-- <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>Nota:</strong> Los campos marcados con <span class="text-danger">*</span> son obligatorios.
-                    </div> -->
-
                     <!-- Botones -->
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between mt-4">
                         <a href="{{ route('vehiculos.index') }}" class="btn btn-secondary">
-                            <!-- <i class="bi bi-x-circle me-2"></i> -->
                             Cancelar
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <!-- <i class="bi bi-check-circle me-2"></i> -->
                             Guardar Vehículo
                         </button>
                     </div>
@@ -189,17 +160,18 @@
             <div class="card-body">
                 <h6 class="text-muted">
                     <i class="bi bi-question-circle me-2"></i>
-                    Ayuda
+                    Información Importante
                 </h6>
                 <ul class="small text-muted mb-0">
                     <li><strong>Marca:</strong> Fabricante del vehículo (Toyota, Nissan, etc.)</li>
                     <li><strong>Modelo:</strong> Nombre del modelo específico</li>
                     <li><strong>Peso Máximo:</strong> Capacidad de carga en kilogramos</li>
                     <li><strong>Volumen Máximo:</strong> Espacio de carga en metros cúbicos</li>
-                    <li><strong>Estado:</strong> Situación actual del vehículo en la flota</li>
+                    <li><strong>Estado Inicial:</strong> Todo vehículo nuevo se registra como "Disponible" automáticamente</li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
+
 @endsection

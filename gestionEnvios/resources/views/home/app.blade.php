@@ -113,7 +113,7 @@
             <div class="ues-badge mt-2">SAN MIGUEL</div>
         </div>
         <nav class="nav flex-column mt-3">
-            <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">
+            <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/../gestionEnvios/gestionEnvios/public/">
                 <i class="bi bi-speedometer2"></i>Dashboard
             </a>
             <a class="nav-link" href="#">

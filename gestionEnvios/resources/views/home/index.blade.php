@@ -118,7 +118,7 @@
             <div class="ues-badge mt-2">SAN MIGUEL</div>
         </div>
         <nav class="nav flex-column mt-3">
-            <a class="nav-link active" href="#dashboard">
+            <a class="nav-link active" href="dashboard">
                 <i class="bi bi-speedometer2"></i>Dashboard
             </a>
             <a class="nav-link" href="#paquetes">
@@ -127,7 +127,7 @@
             <a class="nav-link" href="#clientes">
                 <i class="bi bi-people"></i>Clientes
             </a>
-            <a class="nav-link" href="#vehiculos">
+            <a class="nav-link" href="vehiculos">
                 <i class="bi bi-truck"></i>Vehículos
             </a>
             <a class="nav-link" href="#rutas">
