@@ -16,7 +16,7 @@ class ClientesController extends Controller
 
         $titulo = "clientes";
 
-        return view('clientes.clientes', compact('clientes', 'titulo'));
+        return view('livewire.clientes.clientes-index', compact('clientes', 'titulo'));
     }
 
     /**
