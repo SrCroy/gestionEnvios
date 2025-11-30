@@ -33,3 +33,7 @@ Route::middleware('auth')->group(function () {
     })->name('vehiculos.index');
 
 });
+
+Route::get('/rutas', function () {
+    return view('livewire.rutas.rutas');
+})->name('rutas.index');
