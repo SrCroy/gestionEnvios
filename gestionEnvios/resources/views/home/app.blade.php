@@ -210,7 +210,7 @@
             <a class="nav-link" href="#">
                 <i class="bi bi-map"></i>Rutas
             </a>
-            <a class="nav-link" href="#">
+            <a class="nav-link {{ request()->is('motoristas*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
                 <i class="bi bi-person-badge"></i>Motoristas
             </a>
             <a class="nav-link" href="#">
