@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="{{ asset('css/quevedo.css') }}" rel="stylesheet">
-    <title>{{ $titulo }}</title>
-</head>
-<body class="bg-gray">
+@extends('home.index')
+
+@section('title', 'Detalles del Cliente - UES FMO')
+
+@section('content')
     <div class="flex flex-col gap-2 p-2 bg-secondary container">
         <div class="row">
             <div class="col-2 text-info">
@@ -34,5 +29,4 @@
         <a href={{ route('clientes.edit', $cliente->id) }} class="btn btn-success">edit</a>
         <a href={{ route('clientes.delete', $cliente->id) }} class="btn btn-danger">delite</a>
     </div>
-</body>
-</html>
+@endsection

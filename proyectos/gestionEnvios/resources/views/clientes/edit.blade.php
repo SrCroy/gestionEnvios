@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="{{ asset('css/quevedo.css') }}" rel="stylesheet">
-    <title>{{ $titulo }}</title>
-</head>
-<body>
+@extends('home.index')
+
+@section('title', 'Editar Cliente - UES FMO')
+
+@section('content')
     <div class="flex flex-col p-10 bg-info">
         <a href={{ route('clientes.show', $cliente->id) }} class="btn btn-danger">Cancelar/Regresar</a>
         <form action={{ route('clientes.update', $cliente->id) }} method="post" class="flex flex-col">
@@ -31,5 +26,4 @@
         </form>
         
     </div>
-</body>
-</html>
+@endsection
