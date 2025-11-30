@@ -28,7 +28,7 @@
                 <td>{{ $cliente->longitud }}</td>
                 <td class="flex flex-row">
                     <a href={{ route('clientes.show', $cliente->id) }} class="btn btn-primary">show</a>
-                    <a href="" class="btn btn-danger">delite</a>
+                    <a href={{ route('clientes.delete', $cliente->id) }} class="btn btn-danger">delite</a>
                 </td>
             </tr>
         @endforeach

@@ -32,7 +32,7 @@
     </div>
     <div class="d-flex flex-row justify-content-around p-2 bg-info">
         <a href={{ route('clientes.edit', $cliente->id) }} class="btn btn-success">edit</a>
-        <a href={{ route('clientes.index') }} class="btn btn-danger">delite</a>
+        <a href={{ route('clientes.delete', $cliente->id) }} class="btn btn-danger">delite</a>
     </div>
 </body>
 </html>
