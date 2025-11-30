@@ -5,6 +5,7 @@ use App\Http\Controllers\VehiculoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClientesController;
 
 Route::get('/', function () {
     return view('home.dashboard');
@@ -22,18 +23,31 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/logout', [loginController::class, 'logout'])->name('logout');
 
-    // Motoristas (tu versión)
+    // Motoristas
     Route::get('/motoristas', function () {
         return view('motoristas.MotoristasIndex');
     })->name('motoristas.index');
 
-    // Vehículos (rama-ivan)
+    // Vehículos
     Route::get('/vehiculos', function () {
         return view('vehiculos.index');
     })->name('vehiculos.index');
 
-});
+    // Rutas
+    Route::get('/rutas', function () {
+        return view('livewire.rutas.rutas');
+    })->name('rutas.index');
 
-Route::get('/rutas', function () {
-    return view('livewire.rutas.rutas');
-})->name('rutas.index');
+    // Clientes (de la rama quevedo-rama-la-buena-quiero-pensar)
+    Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
+
+    Route::get('/clientes/create', [ClientesController::class, 'store'])->name('clientes.store');
+    Route::post('/clientes/create', [ClientesController::class, 'create'])->name('clientes.create');
+
+    Route::get('/clientes/{id}', [ClientesController::class, 'show'])->name('clientes.show');
+
+    Route::get('/clientes/{id}/editar', [ClientesController::class, 'edit'])->name('clientes.edit');
+    Route::put('/clientes/{id}', [ClientesController::class, 'update'])->name('clientes.update');
+
+    Route::delete('/clientes/{id}', [ClientesController::class, 'destroy'])->name('clientes.delete');
+});

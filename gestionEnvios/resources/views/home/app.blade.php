@@ -201,7 +201,7 @@
             <a class="nav-link" href="#">
                 <i class="bi bi-box-seam"></i>Gestión Paquetes
             </a>
-            <a class="nav-link" href="#">
+            <a class="nav-link {{ request()->is('clientes*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
                 <i class="bi bi-people"></i>Clientes
             </a>
             <a class="nav-link {{ request()->is('vehiculos*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
