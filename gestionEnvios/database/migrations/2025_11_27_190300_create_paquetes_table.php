@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('descripcion');
             $table->decimal('peso', 10, 2);
             $table->decimal('altura', 10, 2);
-            $table->date('fechaRegistro');
+            $table->date('fechaRegistro')->nullable();
             $table->date('fechaEstimadaEntrega')->nullable();
             $table->string('estadoActual', 50);
             $table->timestamps();
