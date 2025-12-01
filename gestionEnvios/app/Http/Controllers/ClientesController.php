@@ -86,7 +86,7 @@ class ClientesController extends Controller
 
         $cliente->save();
 
-        $clientes = clientes::all();
+        $clientes = clientes::all(); 
 
         return redirect()->route('clientes.index');
     }
@@ -96,9 +96,13 @@ class ClientesController extends Controller
      */
     public function destroy($id)
     {
-        $cliente = clientes::findOrFail($id);
-        $cliente->delete();
-        
-        return redirect()->route('clientes.index');
+        try {
+            $cliente = clientes::findOrFail($id);
+            $cliente->delete();
+            
+            return redirect()->route('clientes.index');
+        } catch (\Throwable $th) {
+            return redirect()->route('clientes.index')->with('error', 'No se pudo eliminar');
+        }
     }
 }

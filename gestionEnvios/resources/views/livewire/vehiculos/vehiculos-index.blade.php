@@ -207,7 +207,7 @@
     </div>
 
     <!-- Modal Crear (Bootstrap Native) -->
-    <div class="modal fade" id="createModal" tabindex="-1" wire:ignore.self>
+    <div class="modal fade" id="createModal" tabindex="-1" wire:ignore.self> 
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">

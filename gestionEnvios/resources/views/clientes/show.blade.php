@@ -3,8 +3,9 @@
 @section('title', 'Detalles del Cliente - UES FMO')
 
 @section('content')
-    <div class="flex flex-col gap-2 p-2 bg-secondary container">
-        <div class="row">
+    <div class="flex flex-col gap-2 p-2 container">
+        <a href={{ route('clientes.index') }} class="btn btn-success">Regresar</a>
+        <div class="row gap-3 w-full">
             <div class="col-2 text-info">
                 <h1>id: </h1>
                 <h1>nombre: </h1>
@@ -14,14 +15,14 @@
                 <h1>latitud: </h1>
                 <h1>longitud: </h1>
             </div>
-            <div class="col-8">
-                <h1 class="text-light">{{ $cliente->id }}</h1>
-                <h1 class="text-light">{{ $cliente->nombre }}</h1>
-                <h1 class="text-light">{{ $cliente->email }}</h1>
-                <h1 class="text-light">{{ $cliente->telefono }}</h1>
-                <h1 class="text-light">{{ $cliente->direccion }}</h1>
-                <h1 class="text-light">{{ $cliente->latitud }}</h1>
-                <h1 class="text-light">{{ $cliente->longitud }}</h1>
+            <div class="col-9">
+                <h1 class="">{{ $cliente->id }}</h1>
+                <h1 class="">{{ $cliente->nombre }}</h1>
+                <h1 class="">{{ $cliente->email }}</h1>
+                <h1 class="">{{ $cliente->telefono }}</h1>
+                <h1 class="">{{ $cliente->direccion }}</h1>
+                <h1 class="">{{ $cliente->latitud }}</h1>
+                <h1 class="">{{ $cliente->longitud }}</h1>
             </div>
         </div>
     </div>

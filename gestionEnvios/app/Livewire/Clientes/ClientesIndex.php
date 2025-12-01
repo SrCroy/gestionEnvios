@@ -17,6 +17,30 @@ class ClientesIndex extends Component
 
     public $clienteDelete;
 
+    public function delete()
+    {
+        try {
+            
+            $nombre = $this->clienteDelete->nombre;
+            $email = $this->clienteDelete->email;
+            
+            $this->clienteDelete->delete();
+            $this->dispatch('closeModal', 'deleteModal');
+            
+            // ✅ Notificación roja al eliminar
+            $this->dispatch('toast', [
+                'message' => "Cliente {$nombre} {$email} eliminado",
+                'type' => 'error'
+            ]);
+            
+        } catch (\Exception $e) {
+            $this->dispatch('toast', [
+                'message' => 'Error al eliminar el cliente',
+                'type' => 'error'
+            ]);
+        }
+    }
+
     public function render()
     {
         $clientes = clientes::all();
