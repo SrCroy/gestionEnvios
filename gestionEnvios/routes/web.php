@@ -33,11 +33,15 @@ Route::middleware('auth')->group(function () {
         return view('vehiculos.index');
     })->name('vehiculos.index');
 
+    Route::get('/clientes', function () {
+        return view('clientes.index');
+    })->name('clientes.index');
+
 });
 
 //clientes quevedo rama quevedo
 
-Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
+//Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
 
 Route::get('/clientes/create', [ClientesController::class, 'store'])->name('clientes.store');
 Route::post('/clientes/create', [ClientesController::class, 'create'])->name('clientes.create');
