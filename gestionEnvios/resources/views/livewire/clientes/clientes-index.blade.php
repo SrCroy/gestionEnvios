@@ -1,3 +1,5 @@
+@extends('home.index')
+@section('content')
 <div>
     <a href={{ route('clientes.create') }} class="btn btn-success">Agregar Cliente</a>
     <table class="fs-6 overflow-auto">
@@ -26,3 +28,4 @@
         </tbody>
     </table>
 </div>
+@endsection
