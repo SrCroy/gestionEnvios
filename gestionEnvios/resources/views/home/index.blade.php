@@ -130,6 +130,9 @@
             <a class="nav-link" href="vehiculos">
                 <i class="bi bi-truck"></i>Vehículos
             </a>
+            <a class="nav-link" href="{{ route('asignaciones.index') }}">
+                <i class="bi bi-calendar"></i>Asignaciones
+            </a>
             <a class="nav-link" href="#rutas">
                 <i class="bi bi-map"></i>Rutas
             </a>
@@ -215,4 +218,5 @@
         });
     </script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </html>

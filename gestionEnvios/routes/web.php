@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientesController;
+use App\Http\Controllers\AsignacionesController;
 
 Route::get('/', function () {
     return view('home.dashboard');
@@ -50,4 +51,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/clientes/{id}', [ClientesController::class, 'update'])->name('clientes.update');
 
     Route::delete('/clientes/{id}', [ClientesController::class, 'destroy'])->name('clientes.delete');
+
+
+    // Asignaciones (todas protegidas)
+    Route::get('/asignaciones', [AsignacionesController::class, 'index'])->name('asignaciones.index');
+    Route::get('/asignaciones/events', [AsignacionesController::class, 'events'])->name('asignaciones.events');
+    Route::post('/asignaciones', [AsignacionesController::class, 'store'])->name('asignaciones.store');
+    Route::put('/asignaciones/{id}', [AsignacionesController::class, 'update'])->name('asignaciones.update');
+    Route::delete('/asignaciones/{id}', [AsignacionesController::class, 'destroy'])->name('asignaciones.destroy');
 });
+
