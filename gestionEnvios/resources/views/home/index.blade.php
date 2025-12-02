@@ -124,20 +124,20 @@
             <a class="nav-link" href="#paquetes">
                 <i class="bi bi-box-seam"></i>Gestión Paquetes
             </a>
-            <a class="nav-link" href="#clientes">
+            <a class="nav-link" href="{{ route('clientes.index') }}">
                 <i class="bi bi-people"></i>Clientes
             </a>
-            <a class="nav-link" href="vehiculos">
+            <a class="nav-link" href="{{ route('vehiculos.index') }}">
                 <i class="bi bi-truck"></i>Vehículos
             </a>
-            <a class="nav-link" href="#rutas">
+            <a class="nav-link" href="{{ route('asignaciones.index') }}">
+                <i class="bi bi-calendar"></i>Asignaciones
+            </a>
+            <a class="nav-link" href="{{ route('rutas.index') }}">
                 <i class="bi bi-map"></i>Rutas
             </a>
-            <a class="nav-link" href="motoristas">
+            <a class="nav-link" href="{{ route('motoristas.index') }}">
                 <i class="bi bi-person-badge"></i>Motoristas
-            </a>
-            <a class="nav-link" href="#reportes">
-                <i class="bi bi-graph-up"></i>Reportes
             </a>
         </nav>
         
@@ -200,7 +200,7 @@
         <!-- Page Content -->
         <div class="container-fluid p-4">
             @yield('content')
-        </div>[]
+        </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -215,4 +215,5 @@
         });
     </script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </html>

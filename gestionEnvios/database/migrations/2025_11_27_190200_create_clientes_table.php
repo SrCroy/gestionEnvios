@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('telefono', 25);
             $table->string('direccion', 255);
             $table->string('email', 150)->unique();
-            $table->decimal('latitud', 10, 7);
-            $table->decimal('longitud', 10, 7);
+            $table->decimal('latitud', 10, 7)->nullable();
+            $table->decimal('longitud', 10, 7)->nullable();
+            $table->string('password', 100);
             $table->timestamps();
         });
     }
