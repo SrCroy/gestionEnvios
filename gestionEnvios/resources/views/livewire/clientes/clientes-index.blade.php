@@ -1,4 +1,4 @@
-@extends('home.index')
+@extends('home.app')
 @section('content')
 <div>
     <a href={{ route('clientes.create') }} class="btn btn-success">Agregar Cliente</a>
