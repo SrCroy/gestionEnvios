@@ -179,18 +179,25 @@
         </div>
 
         <nav class="nav flex-column mt-3">
-            <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/../gestionEnvios/gestionEnvios/public/">
+            <a class="nav-link active" href="dashboard">
                 <i class="bi bi-speedometer2"></i>Dashboard
             </a>
-            <a class="nav-link" href="#"><i class="bi bi-box-seam"></i>Gestión Paquetes</a>
-            <a class="nav-link {{ request()->is('clientes*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
+            <a class="nav-link" href="#paquetes">
+                <i class="bi bi-box-seam"></i>Gestión Paquetes
+            </a>
+            <a class="nav-link" href="{{ route('clientes.index') }}">
                 <i class="bi bi-people"></i>Clientes
             </a>
-            <a class="nav-link {{ request()->is('vehiculos*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
+            <a class="nav-link" href="{{ route('vehiculos.index') }}">
                 <i class="bi bi-truck"></i>Vehículos
             </a>
-            <a class="nav-link" href="#"><i class="bi bi-map"></i>Rutas</a>
-            <a class="nav-link {{ request()->is('motoristas*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
+            <a class="nav-link" href="{{ route('asignaciones.index') }}">
+                <i class="bi bi-calendar"></i>Asignaciones
+            </a>
+            <a class="nav-link" href="{{ route('rutas.index') }}">
+                <i class="bi bi-map"></i>Rutas
+            </a>
+            <a class="nav-link" href="{{ route('motoristas.index') }}">
                 <i class="bi bi-person-badge"></i>Motoristas
             </a>
         </nav>

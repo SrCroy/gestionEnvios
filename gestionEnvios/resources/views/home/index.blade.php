@@ -200,7 +200,7 @@
         <!-- Page Content -->
         <div class="container-fluid p-4">
             @yield('content')
-        </div>[]
+        </div>
     </div>
 
     <!-- Bootstrap JS -->

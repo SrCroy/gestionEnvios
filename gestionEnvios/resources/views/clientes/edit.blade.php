@@ -1,4 +1,4 @@
-@extends('home.index')
+@extends('home.app')
 
 @section('title', 'Editar Cliente - UES FMO')
 
