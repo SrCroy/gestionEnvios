@@ -193,7 +193,6 @@
             <a class="nav-link {{ request()->is('motoristas*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
                 <i class="bi bi-person-badge"></i>Motoristas
             </a>
-            <a class="nav-link" href="#"><i class="bi bi-graph-up"></i>Reportes</a>
         </nav>
 
         <div class="p-3 mt-auto border-top border-light small text-white-50">
