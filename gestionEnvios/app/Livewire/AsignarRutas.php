@@ -5,8 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Asignacion;
 use App\Models\User;
-use App\Models\paquetes;
-use App\Models\vehiculo;
+use App\Models\Paquete;
+use App\Models\Vehiculo;
 use App\Models\historial_envio;
 use Illuminate\Support\Facades\DB;
 
@@ -14,46 +14,31 @@ class AsignarRutas extends Component
 {
     public $fechaSeleccionada;
     public $motoristaSeleccionado = null;
-    public $paqueteSeleccionado = null;
+    public $paquetesSeleccionados = [];
     public $tipoAccion = 'recoger';
     
-    // Listas
     public $fechasConAsignaciones = [];
     public $motoristasDelDia = [];
     public $paquetesDisponibles = [];
     public $asignacionesDelMotorista = [];
     
-    // Estadísticas
     public $pesoTotal = 0;
     public $capacidadMaxima = 0;
     public $porcentajeUso = 0;
-    
-    // Vehículo asignado
     public $vehiculoAsignado = null;
-
-    // Método para forzar recarga
-    public function recargarTodo()
-    {
-        $this->cargarFechasConAsignaciones();
-        if (!empty($this->fechasConAsignaciones)) {
-            if (!$this->fechaSeleccionada || !in_array($this->fechaSeleccionada, $this->fechasConAsignaciones)) {
-                $this->fechaSeleccionada = $this->fechasConAsignaciones[0];
-            }
-            $this->cargarMotoristasDelDia();
-            if ($this->motoristaSeleccionado) {
-                $this->cargarDatosMotorista();
-            }
-        }
-    }
+    public $pesoSeleccionado = 0;
 
     public function mount()
     {
-        $this->recargarTodo();
+        $this->cargarFechasConAsignaciones();
+        if (!empty($this->fechasConAsignaciones)) {
+            $this->fechaSeleccionada = $this->fechasConAsignaciones[0];
+            $this->cargarMotoristasDelDia();
+        }
     }
 
     private function cargarFechasConAsignaciones()
     {
-        // Obtener fechas DISTINTAS de la tabla asignaciones
         $this->fechasConAsignaciones = Asignacion::selectRaw('DATE(fechaAsignacion) as fecha')
             ->distinct()
             ->orderBy('fecha', 'desc')
@@ -66,7 +51,6 @@ class AsignarRutas extends Component
         $this->fechaSeleccionada = $fecha;
         $this->resetSelecciones();
         $this->cargarMotoristasDelDia();
-        $this->dispatch('fecha-cambiada', fecha: $fecha);
     }
 
     public function updatedFechaSeleccionada()
@@ -76,21 +60,9 @@ class AsignarRutas extends Component
 
     public function seleccionarMotorista($motoristaId)
     {
-        try {
-            $this->motoristaSeleccionado = $motoristaId;
-
-            // Log para depuración
-            logger()->info("Motorista seleccionado: {$motoristaId}");
-
-            $this->cargarDatosMotorista();
-            $this->dispatch('motorista-seleccionado', motoristaId: $motoristaId);
-        } catch (\Exception $e) {
-            // Log del error
-            logger()->error("Error al seleccionar motorista: " . $e->getMessage());
-
-            // Mostrar mensaje de error al usuario
-            $this->dispatch('toast', ['message' => 'Error al cargar datos del motorista.', 'type' => 'error']);
-        }
+        $this->motoristaSeleccionado = $motoristaId;
+        $this->cargarDatosMotorista();
+        $this->cargarPaquetesDisponibles();
     }
 
     private function cargarMotoristasDelDia()
@@ -100,7 +72,6 @@ class AsignarRutas extends Component
             return;
         }
 
-        // Motoristas que tienen asignaciones en esta fecha
         $this->motoristasDelDia = User::where('rol', 'Motorista')
             ->whereHas('asignaciones', function ($query) {
                 $query->whereDate('fechaAsignacion', $this->fechaSeleccionada);
@@ -115,45 +86,52 @@ class AsignarRutas extends Component
     private function cargarDatosMotorista()
     {
         if (!$this->motoristaSeleccionado) {
-            $this->asignacionesDelMotorista = collect(); // Asegurarse de que sea una colección vacía
+            $this->asignacionesDelMotorista = collect();
             $this->vehiculoAsignado = null;
             $this->resetEstadisticas();
             return;
         }
 
-        // Cargar asignaciones del motorista para este día
         $this->asignacionesDelMotorista = Asignacion::where('idMotorista', $this->motoristaSeleccionado)
             ->whereDate('fechaAsignacion', $this->fechaSeleccionada)
-            ->with(['vehiculo', 'paquete'])
+            ->with(['vehiculo', 'paquete.destinatario', 'paquete.remitente'])
             ->get();
 
-        // Obtener el vehículo asignado
-        $asignacion = $this->asignacionesDelMotorista->first();
-        if ($asignacion && $asignacion->vehiculo) {
-            $this->vehiculoAsignado = $asignacion->vehiculo;
+        $asignacionConVehiculo = $this->asignacionesDelMotorista->first(function ($asignacion) {
+            return $asignacion->vehiculo !== null;
+        });
+
+        if ($asignacionConVehiculo && $asignacionConVehiculo->vehiculo) {
+            $this->vehiculoAsignado = $asignacionConVehiculo->vehiculo;
+            $this->capacidadMaxima = $asignacionConVehiculo->vehiculo->pesoMaximo;
         } else {
             $this->vehiculoAsignado = null;
+            $this->capacidadMaxima = 0;
         }
 
-        // Calcular estadísticas
         $this->calcularEstadisticas();
     }
 
     private function cargarPaquetesDisponibles()
     {
-        // Depuración: Verificar motorista seleccionado y fecha
-        logger("Motorista seleccionado: {$this->motoristaSeleccionado}, Fecha seleccionada: {$this->fechaSeleccionada}");
-
-        // Filtrar paquetes con los estados 'Recoger' y 'Entregar'
-        $this->paquetesDisponibles = paquetes::whereIn('estadoActual', ['Recoger', 'Entregar'])
-            ->whereDoesntHave('asignacion', function ($query) {
-                $query->whereDate('fechaAsignacion', $this->fechaSeleccionada);
+        $estadoBuscado = $this->tipoAccion === 'recoger' ? 'Recoger' : 'Entregar';
+        
+        // Paquetes que YA están asignados en esta fecha
+        $paquetesYaAsignadosEnEstaFecha = Asignacion::whereDate('fechaAsignacion', $this->fechaSeleccionada)
+            ->whereNotNull('idPaquete')
+            ->pluck('idPaquete')
+            ->toArray();
+        
+        // Paquetes disponibles: sin vehículo y no asignados en esta fecha
+        $this->paquetesDisponibles = Paquete::where('estadoActual', $estadoBuscado)
+            ->whereNull('idVehiculo')
+            ->when(!empty($paquetesYaAsignadosEnEstaFecha), function ($query) use ($paquetesYaAsignadosEnEstaFecha) {
+                return $query->whereNotIn('id', $paquetesYaAsignadosEnEstaFecha);
             })
             ->with(['destinatario', 'remitente'])
             ->get();
-
-        // Depuración: Verificar cuántos paquetes se cargaron
-        logger("Paquetes disponibles cargados: " . $this->paquetesDisponibles->count());
+            
+        $this->actualizarPesoSeleccionado();
     }
 
     private function calcularEstadisticas()
@@ -171,24 +149,32 @@ class AsignarRutas extends Component
         }
     }
 
-    public function asignarPaquete()
+    public function updatedPaquetesSeleccionados()
     {
-        // Log para depuración
-        logger()->info('Estado de las variables antes de asignar paquete:', [
-            'paqueteSeleccionado' => $this->paqueteSeleccionado,
-            'vehiculoAsignado' => $this->vehiculoAsignado,
-            'porcentajeUso' => $this->porcentajeUso,
-        ]);
+        $this->actualizarPesoSeleccionado();
+    }
 
+    private function actualizarPesoSeleccionado()
+    {
+        $this->pesoSeleccionado = 0;
+        foreach ($this->paquetesSeleccionados as $paqueteId) {
+            $paquete = Paquete::find($paqueteId);
+            if ($paquete) {
+                $this->pesoSeleccionado += $paquete->peso;
+            }
+        }
+    }
+
+    public function asignarPaquetes()
+    {
         try {
-            // Validaciones iniciales
             if (!$this->motoristaSeleccionado) {
                 $this->dispatch('toast', ['message' => 'Debes seleccionar un motorista', 'type' => 'error']);
                 return;
             }
 
-            if (!$this->paqueteSeleccionado) {
-                $this->dispatch('toast', ['message' => 'Debes seleccionar un paquete', 'type' => 'error']);
+            if (empty($this->paquetesSeleccionados)) {
+                $this->dispatch('toast', ['message' => 'Debes seleccionar al menos un paquete', 'type' => 'error']);
                 return;
             }
 
@@ -197,59 +183,57 @@ class AsignarRutas extends Component
                 return;
             }
 
-            // Verificar si el paquete existe
-            $paquete = paquetes::find($this->paqueteSeleccionado);
-            if (!$paquete) {
-                $this->dispatch('toast', ['message' => 'El paquete no existe', 'type' => 'error']);
-                return;
-            }
-
             // Verificar capacidad
-            $pesoNuevoTotal = $this->pesoTotal + $paquete->peso;
-            if ($pesoNuevoTotal > $this->capacidadMaxima) {
-                $this->dispatch('toast', ['message' => 'No hay capacidad suficiente. Peso excedido.', 'type' => 'error']);
+            if ($this->pesoSeleccionado + $this->pesoTotal > $this->capacidadMaxima) {
+                $this->dispatch('toast', ['message' => 'No hay capacidad suficiente en el vehículo', 'type' => 'error']);
                 return;
             }
 
-            // Manejar paquetes sin dirección
-            if (!$paquete->destinatario && !$paquete->remitente) {
-                logger()->warning("El paquete seleccionado no tiene dirección asociada.", ['paqueteId' => $paquete->id]);
-            }
-
-            // Iniciar transacción
             DB::beginTransaction();
 
-            // Buscar una asignación sin paquete
-            $asignacionSinPaquete = Asignacion::where('idMotorista', $this->motoristaSeleccionado)
-                ->whereDate('fechaAsignacion', $this->fechaSeleccionada)
-                ->whereNull('idPaquete')
-                ->first();
+            foreach ($this->paquetesSeleccionados as $paqueteId) {
+                $paquete = Paquete::find($paqueteId);
+                if (!$paquete) continue;
 
-            if ($asignacionSinPaquete) {
-                // Actualizar la asignación existente
-                $asignacionSinPaquete->update(['idPaquete' => $this->paqueteSeleccionado]);
-            } else {
-                // Crear nueva asignación
-                Asignacion::create([
-                    'idPaquete' => $this->paqueteSeleccionado,
-                    'idMotorista' => $this->motoristaSeleccionado,
+                // Buscar si ya existe una asignación vacía para este motorista en esta fecha
+                $asignacionExistente = Asignacion::where('idMotorista', $this->motoristaSeleccionado)
+                    ->whereDate('fechaAsignacion', $this->fechaSeleccionada)
+                    ->whereNull('idPaquete')
+                    ->first();
+
+                if ($asignacionExistente) {
+                    // Usar asignación existente
+                    $asignacionExistente->update([
+                        'idPaquete' => $paqueteId,
+                        'idVehiculo' => $this->vehiculoAsignado->id,
+                        'fechaAsignacion' => now(),
+                    ]);
+                } else {
+                    // Crear nueva asignación
+                    Asignacion::create([
+                        'idPaquete' => $paqueteId,
+                        'idMotorista' => $this->motoristaSeleccionado,
+                        'idVehiculo' => $this->vehiculoAsignado->id,
+                        'fechaAsignacion' => now(),
+                    ]);
+                }
+
+                // Actualizar estado del paquete
+                $nuevoEstado = $this->tipoAccion === 'recoger' ? 'En camino' : 'Para entregar';
+                $paquete->update([
+                    'estadoActual' => $nuevoEstado,
                     'idVehiculo' => $this->vehiculoAsignado->id,
-                    'fechaAsignacion' => $this->fechaSeleccionada . ' ' . now()->format('H:i:s'),
+                ]);
+
+                // Registrar en historial
+                historial_envio::create([
+                    'idPaquete' => $paqueteId,
+                    'idMotorista' => $this->motoristaSeleccionado,
+                    'estado' => $nuevoEstado,
+                    'comentarios' => "Asignado para {$this->tipoAccion}",
+                    'fechaCambio' => now(),
                 ]);
             }
-
-            // Actualizar estado del paquete
-            $nuevoEstado = $this->tipoAccion === 'recoger' ? 'En camino' : 'Para entregar';
-            $paquete->update(['estadoActual' => $nuevoEstado]);
-
-            // Crear registro en historial
-            historial_envio::create([
-                'idPaquete' => $this->paqueteSeleccionado,
-                'idMotorista' => $this->motoristaSeleccionado,
-                'estado' => $nuevoEstado,
-                'comentarios' => "Asignado para {$this->tipoAccion} el {$this->fechaSeleccionada}",
-                'fechaCambio' => now(),
-            ]);
 
             DB::commit();
 
@@ -259,14 +243,13 @@ class AsignarRutas extends Component
             $this->cargarMotoristasDelDia();
 
             // Limpiar selección
-            $this->paqueteSeleccionado = null;
+            $this->paquetesSeleccionados = [];
+            $this->pesoSeleccionado = 0;
 
-            $this->dispatch('toast', ['message' => 'paquetes asignado correctamente', 'type' => 'success']);
-            $this->dispatch('actualizar-interfaz');
+            $this->dispatch('toast', ['message' => '✅ Paquetes asignados correctamente', 'type' => 'success']);
         } catch (\Exception $e) {
             DB::rollBack();
-            logger()->error("Error al asignar paquete: " . $e->getMessage());
-            $this->dispatch('toast', ['message' => 'Error al asignar paquete: ' . $e->getMessage(), 'type' => 'error']);
+            $this->dispatch('toast', ['message' => '❌ Error: ' . $e->getMessage(), 'type' => 'error']);
         }
     }
 
@@ -278,12 +261,17 @@ class AsignarRutas extends Component
             $asignacion = Asignacion::with('paquete')->find($asignacionId);
             
             if ($asignacion && $asignacion->idPaquete) {
-                // Restaurar estado del paquete
                 $paquete = $asignacion->paquete;
-                $estadoAnterior = $this->tipoAccion === 'recoger' ? 'Pendiente' : 'En camino';
-                $paquete->update(['estadoActual' => $estadoAnterior]);
+                $estadoAnterior = $this->tipoAccion === 'recoger' ? 'Recoger' : 'Entregar';
                 
-                // Registrar en historial
+                // Poner idPaquete a NULL (mantener la asignación)
+                $asignacion->update(['idPaquete' => null]);
+                
+                $paquete->update([
+                    'estadoActual' => $estadoAnterior,
+                    'idVehiculo' => null
+                ]);
+                
                 historial_envio::create([
                     'idPaquete' => $paquete->id,
                     'idMotorista' => $this->motoristaSeleccionado,
@@ -291,39 +279,34 @@ class AsignarRutas extends Component
                     'comentarios' => "Removido de asignación",
                     'fechaCambio' => now(),
                 ]);
-                
-                // Quitar el paquete (poner idPaquete a NULL)
-                $asignacion->update(['idPaquete' => null]);
             }
 
             DB::commit();
 
-            // Recargar datos
             $this->cargarDatosMotorista();
             $this->cargarPaquetesDisponibles();
             $this->cargarMotoristasDelDia();
             
-            $this->dispatch('toast', ['message' => 'paquetes removido correctamente', 'type' => 'success']);
-            $this->dispatch('actualizar-interfaz');
-
+            $this->dispatch('toast', ['message' => '✅ Paquete removido correctamente', 'type' => 'success']);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatch('toast', ['message' => 'Error al remover paquete: ' . $e->getMessage(), 'type' => 'error']);
+            $this->dispatch('toast', ['message' => '❌ Error: ' . $e->getMessage(), 'type' => 'error']);
         }
     }
 
     public function cambiarTipoAccion($tipo)
     {
         $this->tipoAccion = $tipo;
-        $this->paqueteSeleccionado = null;
+        $this->paquetesSeleccionados = [];
+        $this->pesoSeleccionado = 0;
         $this->cargarPaquetesDisponibles();
-        $this->dispatch('tipo-accion-cambiado', tipo: $tipo);
     }
 
     private function resetSelecciones()
     {
         $this->motoristaSeleccionado = null;
-        $this->paqueteSeleccionado = null;
+        $this->paquetesSeleccionados = [];
+        $this->pesoSeleccionado = 0;
         $this->resetDatosMotorista();
     }
 
@@ -340,80 +323,6 @@ class AsignarRutas extends Component
         $this->pesoTotal = 0;
         $this->porcentajeUso = 0;
         $this->capacidadMaxima = 0;
-    }
-
-    protected $listeners = ['setPaqueteSeleccionado'];
-
-    public function setPaqueteSeleccionado($paqueteId)
-    {
-        logger()->info("Evento setPaqueteSeleccionado recibido:", ['paqueteId' => $paqueteId]);
-        $this->paqueteSeleccionado = $paqueteId;
-    }
-
-    public function asignarTodosLosPaquetes()
-    {
-        try {
-            // Validaciones iniciales
-            if (!$this->motoristaSeleccionado) {
-                $this->dispatch('toast', ['message' => 'Debes seleccionar un motorista', 'type' => 'error']);
-                return;
-            }
-
-            if (!$this->vehiculoAsignado) {
-                $this->dispatch('toast', ['message' => 'No hay vehículo asignado para este motorista', 'type' => 'error']);
-                return;
-            }
-
-            // Verificar capacidad del vehículo
-            $pesoTotal = $this->pesoTotal;
-            foreach ($this->paquetesDisponibles as $paquete) {
-                $pesoTotal += $paquete->peso;
-                if ($pesoTotal > $this->capacidadMaxima) {
-                    $this->dispatch('toast', ['message' => 'No hay capacidad suficiente para todos los paquetes.', 'type' => 'error']);
-                    return;
-                }
-            }
-
-            // Iniciar transacción
-            DB::beginTransaction();
-
-            foreach ($this->paquetesDisponibles as $paquete) {
-                // Crear asignación para cada paquete
-                Asignacion::create([
-                    'idPaquete' => $paquete->id,
-                    'idMotorista' => $this->motoristaSeleccionado,
-                    'idVehiculo' => $this->vehiculoAsignado->id,
-                    'fechaAsignacion' => $this->fechaSeleccionada . ' ' . now()->format('H:i:s'),
-                ]);
-
-                // Actualizar estado del paquete
-                $nuevoEstado = $this->tipoAccion === 'recoger' ? 'En camino' : 'Para entregar';
-                $paquete->update(['estadoActual' => $nuevoEstado]);
-
-                // Crear registro en historial
-                historial_envio::create([
-                    'idPaquete' => $paquete->id,
-                    'idMotorista' => $this->motoristaSeleccionado,
-                    'estado' => $nuevoEstado,
-                    'comentarios' => "Asignado para {$this->tipoAccion} el {$this->fechaSeleccionada}",
-                    'fechaCambio' => now(),
-                ]);
-            }
-
-            DB::commit();
-
-            // Recargar datos
-            $this->cargarDatosMotorista();
-            $this->cargarPaquetesDisponibles();
-            $this->cargarMotoristasDelDia();
-
-            $this->dispatch('toast', ['message' => 'Todos los paquetes fueron asignados correctamente', 'type' => 'success']);
-            $this->dispatch('actualizar-interfaz');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            logger()->error("Error al asignar todos los paquetes: " . $e->getMessage());
-            $this->dispatch('toast', ['message' => 'Error al asignar todos los paquetes: ' . $e->getMessage(), 'type' => 'error']);
-        }
     }
 
     public function render()

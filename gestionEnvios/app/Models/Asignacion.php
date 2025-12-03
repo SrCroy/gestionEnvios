@@ -13,26 +13,30 @@ class Asignacion extends Model
     protected $table = 'asignaciones';
 
     protected $fillable = [
-        'fechaAsignacion',
+        'idPaquete',
         'idMotorista',
         'idVehiculo',
-        'notas',
+        'fechaAsignacion',
     ];
 
     protected $casts = [
         'fechaAsignacion' => 'date',
     ];
 
-    public function motorista(): BelongsTo
+    public function paquete()
     {
-        return $this->belongsTo(User::class, 'idMotorista');
+        return $this->belongsTo(Paquete::class, 'idPaquete');
     }
 
-    /**
-     * Relación con el modelo vehiculo.
-     */
+    // Relación con el modelo Vehiculo
     public function vehiculo()
     {
-        return $this->belongsTo(vehiculo::class, 'idVehiculo', 'id');
+        return $this->belongsTo(Vehiculo::class, 'idVehiculo');
+    }
+
+    // Relación con el modelo User (Motorista)
+    public function motorista()
+    {
+        return $this->belongsTo(User::class, 'idMotorista');
     }
 }
