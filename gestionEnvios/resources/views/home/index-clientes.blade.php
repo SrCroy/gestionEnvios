@@ -156,13 +156,13 @@
                 <i class="bi bi-box2-heart-fill"></i> Mis Paquetes
             </a>
 
-            <a class="nav-link" href="#">
+            <!-- <a class="nav-link" href="#">
                 <i class="bi bi-geo-alt-fill"></i> Rastreo Rápido
             </a>
 
             <a class="nav-link" href="#">
                 <i class="bi bi-clock-history"></i> Historial
-            </a>
+            </a> -->
 
             <div class="mt-4 px-3 text-uppercase text-white-50" style="font-size: 0.75rem; font-weight: bold;">Cuenta</div>
             

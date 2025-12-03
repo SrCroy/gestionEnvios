@@ -33,7 +33,7 @@ Route::get('/', function () {
 
 
     if (Auth::guard('cliente')->check()) {
-        return redirect()->route('clientes.dashboard');
+        return redirect()->route('cliente.dashboard');
     }
 
     return view('welcome');
