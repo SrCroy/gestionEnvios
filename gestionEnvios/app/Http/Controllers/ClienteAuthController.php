@@ -33,7 +33,7 @@ class ClienteAuthController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->route('cliente.dashboard')
+            return redirect()->route('clientes.dashboard')
                 ->with('success', '¡Bienvenido!');
         }
 

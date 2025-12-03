@@ -78,6 +78,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/asignaciones', [AsignacionesController::class, 'store'])->name('asignaciones.store');
     Route::put('/asignaciones/{id}', [AsignacionesController::class, 'update'])->name('asignaciones.update');
     Route::delete('/asignaciones/{id}', [AsignacionesController::class, 'destroy'])->name('asignaciones.destroy');
+
+    Route::get('/paquetes', function () {
+        return view('paquetes.index');
+    })->name('paquetes.index-tracking');
 });
 
 

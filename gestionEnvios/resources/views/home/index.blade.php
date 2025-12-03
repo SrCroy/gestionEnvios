@@ -132,7 +132,7 @@
                     <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
                         <i class="bi bi-speedometer2"></i>Dashboard
                     </a>
-                    <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="{{ route('paquetes.index') }}">
+                    <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="{{ route('paquetes.index-tracking') }}">
                         <i class="bi bi-box-seam"></i>Gestión Paquetes
                     </a>
                     <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
