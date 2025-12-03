@@ -27,6 +27,6 @@ class DashboardController extends Controller
             'vehiculos_activos' => 12,
         ];
 
-        return view('livewire.dashboard.dashboard', compact('stats'));
+        return view('home.dashboard');
     }
 }

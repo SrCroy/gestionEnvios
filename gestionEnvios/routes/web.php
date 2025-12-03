@@ -46,6 +46,9 @@ Route::post('/logout', [loginController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.home');
+    /* Route::get('/dashboard', function () {
+        return view('dashboard.dashboard-index');
+    })->name('vehiculos.index'); */
 
 
     Route::get('/motoristas', function () {
@@ -65,7 +68,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/asignar-rutas', function () {
         return view('asignar-rutas.index');
-    })->name('asignar.rutas');
+    })->name('asignar-rutas');
 
 
     Route::get('/rutas', function () {

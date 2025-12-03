@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <base href="{{ url('/') }}/">
-    
+
     <title>@yield('title', 'UES FMO - Gestor de Paquetes')</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,9 +22,15 @@
         }
 
         /* Corrección para parpadeos de carga en Livewire */
-        [wire\:loading], [wire\:loading\.delay], [wire\:loading\.inline-block],
-        [wire\:loading\.inline], [wire\:loading\.block], [wire\:loading\.flex],
-        [wire\:loading\.table], [wire\:loading\.grid], [wire\:loading\.inline-flex] {
+        [wire\:loading],
+        [wire\:loading\.delay],
+        [wire\:loading\.inline-block],
+        [wire\:loading\.inline],
+        [wire\:loading\.block],
+        [wire\:loading\.flex],
+        [wire\:loading\.table],
+        [wire\:loading\.grid],
+        [wire\:loading\.inline-flex] {
             display: none;
         }
 
@@ -45,7 +51,8 @@
             transition: all 0.3s;
         }
 
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
             background: rgba(255, 255, 255, 0.1);
             border-left: 4px solid #FFD700;
         }
@@ -70,9 +77,11 @@
                 width: 100%;
                 transform: translateX(-100%);
             }
+
             .sidebar.show {
                 transform: translateX(0);
             }
+
             .content {
                 margin-left: 0;
             }
@@ -112,64 +121,64 @@
 
 <body>
 
-    {{-- 
+    {{--
         VERIFICACIÓN CRÍTICA: 
         Asegura que el usuario del guard 'web' (Admin/Motorista) esté logueado
         antes de intentar acceder a Auth::user()->rol.
     --}}
     @if(Auth::guard('web')->check())
-        <div class="sidebar p-0" id="sidebar">
-            <div class="p-3 text-center border-bottom border-light">
-                <h4 class="text-white mb-1"><i class="bi bi-building"></i> UES FMO</h4>
-                <small class="text-warning">Facultad Multidisciplinaria Oriental</small>
-                <div class="ues-badge mt-2">SAN MIGUEL</div>
-            </div>
-
-            <nav class="nav flex-column mt-3">
-                
-                {{-- SECCIÓN: ADMINISTRADOR --}}
-                @if(Auth::user()->rol === 'Administrador')
-                    <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
-                        <i class="bi bi-speedometer2"></i>Dashboard
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="{{ route('paquetes.index-tracking') }}">
-                        <i class="bi bi-box-seam"></i>Gestión Paquetes
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
-                        <i class="bi bi-people"></i>Clientes
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
-                        <i class="bi bi-truck"></i>Vehículos
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('ruta.*') ? 'active' : '' }}" href="{{ route('asignar.rutas') }}">
-                        <i class="bi bi-truck"></i>Asignar Ruta
-                    </a>
-                @endif
-
-                {{-- SECCIÓN: COMÚN (Admin y Motorista) --}}
-                @if(in_array(Auth::user()->rol, ['Administrador', 'Motorista']))
-                    <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
-                        <i class="bi bi-calendar"></i>Asignaciones
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
-                        <i class="bi bi-map"></i>Rutas
-                    </a>
-                @endif
-
-                {{-- SECCIÓN: ADMINISTRADOR (Gestión de usuarios/motoristas) --}}
-                @if(Auth::user()->rol === 'Administrador')
-                    <a class="nav-link {{ request()->routeIs('motoristas.*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
-                        <i class="bi bi-person-badge"></i>Motoristas
-                    </a>
-                @endif
-
-            </nav>
-
-            <div class="p-3 mt-auto border-top border-light small text-white-50">
-                <div class="mb-2"><i class="bi bi-database me-2"></i><span class="text-success">En línea</span></div>
-                <div><i class="bi bi-building me-2"></i>UES FMO</div>
-            </div>
+    <div class="sidebar p-0" id="sidebar">
+        <div class="p-3 text-center border-bottom border-light">
+            <h4 class="text-white mb-1"><i class="bi bi-building"></i> UES FMO</h4>
+            <small class="text-warning">Facultad Multidisciplinaria Oriental</small>
+            <div class="ues-badge mt-2">SAN MIGUEL</div>
         </div>
+
+        <nav class="nav flex-column mt-3">
+
+            {{-- SECCIÓN: ADMINISTRADOR --}}
+            @if(Auth::user()->rol === 'Administrador')
+            <a class="nav-link {{ request()->routeIs('dashboard.home') ? 'active' : '' }}" href="{{ route('dashboard.home') }}">
+                <i class="bi bi-speedometer2"></i>Dashboard
+            </a>
+            <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="{{ route('paquetes.index-tracking') }}">
+                <i class="bi bi-box-seam"></i>Gestión Paquetes
+            </a>
+            <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
+                <i class="bi bi-people"></i>Clientes
+            </a>
+            <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
+                <i class="bi bi-truck"></i>Vehículos
+            </a>
+            <a class="nav-link {{ request()->routeIs('ruta.*') ? 'active' : '' }}" href="{{ route('asignar-rutas') }}">
+                <i class="bi bi-truck"></i>Asignar Ruta
+            </a>
+            @endif
+
+            {{-- SECCIÓN: COMÚN (Admin y Motorista) --}}
+            @if(in_array(Auth::user()->rol, ['Administrador', 'Motorista']))
+            <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
+                <i class="bi bi-calendar"></i>Asignaciones
+            </a>
+            <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
+                <i class="bi bi-map"></i>Rutas
+            </a>
+            @endif
+
+            {{-- SECCIÓN: ADMINISTRADOR (Gestión de usuarios/motoristas) --}}
+            @if(Auth::user()->rol === 'Administrador')
+            <a class="nav-link {{ request()->routeIs('motoristas.*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
+                <i class="bi bi-person-badge"></i>Motoristas
+            </a>
+            @endif
+
+        </nav>
+
+        <div class="p-3 mt-auto border-top border-light small text-white-50">
+            <div class="mb-2"><i class="bi bi-database me-2"></i><span class="text-success">En línea</span></div>
+            <div><i class="bi bi-building me-2"></i>UES FMO</div>
+        </div>
+    </div>
     @endif
     <div class="content p-0">
 
@@ -182,27 +191,27 @@
 
                 <div class="navbar-nav ms-auto">
                     @if(Auth::guard('web')->check()) {{-- Check antes de mostrar información de usuario --}}
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name ?? 'Usuario' }}
-                                <span class="badge bg-secondary ms-1">{{ Auth::user()->rol ?? 'Rol' }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name ?? 'Usuario' }}
+                            <span class="badge bg-secondary ms-1">{{ Auth::user()->rol ?? 'Rol' }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                     @else
-                         {{-- Si no hay usuario 'web' logueado, mostrar el botón de login si no es una ruta de cliente --}}
-                         <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                         </a>
+                    {{-- Si no hay usuario 'web' logueado, mostrar el botón de login si no es una ruta de cliente --}}
+                    <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
                     @endif
                 </div>
             </div>
@@ -215,7 +224,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    
+
     <script src="{{ asset('vendor/livewire/livewire.js') }}" data-navigate-once></script>
 
     <script>
@@ -231,7 +240,7 @@
         // Sidebar Toggle
         document.addEventListener('DOMContentLoaded', () => {
             const toggleBtn = document.getElementById('sidebarToggle');
-            if(toggleBtn) {
+            if (toggleBtn) {
                 toggleBtn.addEventListener('click', () => {
                     document.getElementById('sidebar').classList.toggle('show');
                 });
@@ -241,7 +250,7 @@
         // Toastify
         function showToast(message, type = 'success') {
             const colors = {
-                success: "linear-gradient(to right, #00b09b, #96c93d)", 
+                success: "linear-gradient(to right, #00b09b, #96c93d)",
                 error: "linear-gradient(to right, #ff5f6d, #ffc371)",
                 info: "linear-gradient(to right, #4facfe, #00f2fe)"
             };
@@ -251,12 +260,12 @@
                 duration: 3000,
                 newWindow: true,
                 close: true,
-                gravity: "top", 
-                position: "right", 
+                gravity: "top",
+                position: "right",
                 style: {
                     background: colors[type] || colors['success'],
                 },
-                stopOnFocus: true, 
+                stopOnFocus: true,
             }).showToast();
         }
 
@@ -266,14 +275,14 @@
             Livewire.on('toast', (data) => {
                 let msg = Array.isArray(data) ? data[0].message : data.message;
                 let type = Array.isArray(data) ? data[0].type : data.type;
-                if(msg) showToast(msg, type);
+                if (msg) showToast(msg, type);
             });
 
             // ABRIR MODAL
             Livewire.on('openModal', (id) => {
                 const modalId = Array.isArray(id) ? id[0] : id;
                 const el = document.getElementById(modalId);
-                if(el) {
+                if (el) {
                     bootstrap.Modal.getOrCreateInstance(el).show();
                 }
             });
@@ -282,15 +291,15 @@
             Livewire.on('closeModal', (id) => {
                 const modalId = Array.isArray(id) ? id[0] : id;
                 const el = document.getElementById(modalId);
-                if(el) {
+                if (el) {
                     // Quitamos el foco del botón antes de ocultar
                     if (document.activeElement instanceof HTMLElement) {
                         document.activeElement.blur();
                     }
 
                     const modal = bootstrap.Modal.getInstance(el);
-                    if(modal) modal.hide();
-                    
+                    if (modal) modal.hide();
+
                     // Limpieza forzada del fondo oscuro (Backdrop)
                     setTimeout(() => {
                         document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
@@ -301,7 +310,8 @@
             });
         });
     </script>
-    
+
     @yield('scripts')
 </body>
+
 </html>
