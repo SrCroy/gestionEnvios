@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\User;      // agregado
-use App\Models\vehiculo;  // agregado
 
 class Asignacion extends Model
 {
+    use HasFactory;
+
     protected $table = 'asignaciones';
 
     protected $fillable = [
@@ -27,8 +28,11 @@ class Asignacion extends Model
         return $this->belongsTo(User::class, 'idMotorista');
     }
 
-    public function vehiculo(): BelongsTo
+    /**
+     * Relación con el modelo vehiculo.
+     */
+    public function vehiculo()
     {
-        return $this->belongsTo(vehiculo::class, 'idVehiculo');
+        return $this->belongsTo(vehiculo::class, 'idVehiculo', 'id');
     }
 }

@@ -61,3 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/asignaciones/{id}', [AsignacionesController::class, 'destroy'])->name('asignaciones.destroy');
 });
 
+Route::get('/asignar-rutas', function () {
+    return view('asignar-rutas.index');
+})->name('asignar.rutas');
