@@ -69,8 +69,11 @@ Route::post('/cliente/login', [ClienteAuthController::class, 'login'])->name('cl
 
 Route::middleware('auth:cliente')->group(function () {
     Route::get('/cliente/dashboard', function () {
-        return 'Bienvenido cliente';
+        return view('clientes.dashboard');
     })->name('clientes.dashboard');
+    Route::get('/cliente/paquetes', function () {
+        return view('clientes.paquete');
+    })->name('clientes.paquete');
 });
 
 // routes/web.php
