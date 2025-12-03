@@ -112,56 +112,65 @@
 
 <body>
 
-    <div class="sidebar p-0" id="sidebar">
-        <div class="p-3 text-center border-bottom border-light">
-            <h4 class="text-white mb-1"><i class="bi bi-building"></i> UES FMO</h4>
-            <small class="text-warning">Facultad Multidisciplinaria Oriental</small>
-            <div class="ues-badge mt-2">SAN MIGUEL</div>
+    {{-- 
+        VERIFICACIÓN CRÍTICA: 
+        Asegura que el usuario del guard 'web' (Admin/Motorista) esté logueado
+        antes de intentar acceder a Auth::user()->rol.
+    --}}
+    @if(Auth::guard('web')->check())
+        <div class="sidebar p-0" id="sidebar">
+            <div class="p-3 text-center border-bottom border-light">
+                <h4 class="text-white mb-1"><i class="bi bi-building"></i> UES FMO</h4>
+                <small class="text-warning">Facultad Multidisciplinaria Oriental</small>
+                <div class="ues-badge mt-2">SAN MIGUEL</div>
+            </div>
+
+            <nav class="nav flex-column mt-3">
+                
+                {{-- SECCIÓN: ADMINISTRADOR --}}
+                @if(Auth::user()->rol === 'Administrador')
+                    <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
+                        <i class="bi bi-speedometer2"></i>Dashboard
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="{{ route('paquetes.index') }}">
+                        <i class="bi bi-box-seam"></i>Gestión Paquetes
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
+                        <i class="bi bi-people"></i>Clientes
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
+                        <i class="bi bi-truck"></i>Vehículos
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('asignar.rutas') }}">
+                        <i class="bi bi-truck"></i>Asignar Ruta
+                    </a>
+                @endif
+
+                {{-- SECCIÓN: COMÚN (Admin y Motorista) --}}
+                @if(in_array(Auth::user()->rol, ['Administrador', 'Motorista']))
+                    <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
+                        <i class="bi bi-calendar"></i>Asignaciones
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
+                        <i class="bi bi-map"></i>Rutas
+                    </a>
+                @endif
+
+                {{-- SECCIÓN: ADMINISTRADOR (Gestión de usuarios/motoristas) --}}
+                @if(Auth::user()->rol === 'Administrador')
+                    <a class="nav-link {{ request()->routeIs('motoristas.*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
+                        <i class="bi bi-person-badge"></i>Motoristas
+                    </a>
+                @endif
+
+            </nav>
+
+            <div class="p-3 mt-auto border-top border-light small text-white-50">
+                <div class="mb-2"><i class="bi bi-database me-2"></i><span class="text-success">En línea</span></div>
+                <div><i class="bi bi-building me-2"></i>UES FMO</div>
+            </div>
         </div>
-
-        <nav class="nav flex-column mt-3">
-            
-            {{-- SECCIÓN: ADMINISTRADOR --}}
-            @if(Auth::user()->rol === 'Administrador')
-                <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
-                    <i class="bi bi-speedometer2"></i>Dashboard
-                </a>
-                <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="#paquetes">
-                    <i class="bi bi-box-seam"></i>Gestión Paquetes
-                </a>
-                <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
-                    <i class="bi bi-people"></i>Clientes
-                </a>
-                <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
-                    <i class="bi bi-truck"></i>Vehículos
-                </a>
-            @endif
-
-            {{-- SECCIÓN: COMÚN (Admin y Motorista) --}}
-            {{-- Asumimos que si entra aqui tiene uno de los dos roles, pero validamos por seguridad --}}
-            @if(in_array(Auth::user()->rol, ['Administrador', 'Motorista']))
-                <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
-                    <i class="bi bi-calendar"></i>Asignaciones
-                </a>
-                <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
-                    <i class="bi bi-map"></i>Rutas
-                </a>
-            @endif
-
-            {{-- SECCIÓN: ADMINISTRADOR (Gestión de usuarios/motoristas) --}}
-            @if(Auth::user()->rol === 'Administrador')
-                <a class="nav-link {{ request()->routeIs('motoristas.*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
-                    <i class="bi bi-person-badge"></i>Motoristas
-                </a>
-            @endif
-
-        </nav>
-
-        <div class="p-3 mt-auto border-top border-light small text-white-50">
-            <div class="mb-2"><i class="bi bi-database me-2"></i><span class="text-success">En línea</span></div>
-            <div><i class="bi bi-building me-2"></i>UES FMO</div>
-        </div>
-    </div>
+    @endif
     <div class="content p-0">
 
         <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
@@ -172,22 +181,29 @@
                 <span class="navbar-brand"><i class="bi bi-building me-2"></i>Centro de Distribución</span>
 
                 <div class="navbar-nav ms-auto">
-                    <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name ?? 'Usuario' }}
-                            <span class="badge bg-secondary ms-1">{{ Auth::user()->rol ?? 'Rol' }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+                    @if(Auth::guard('web')->check()) {{-- Check antes de mostrar información de usuario --}}
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name ?? 'Usuario' }}
+                                <span class="badge bg-secondary ms-1">{{ Auth::user()->rol ?? 'Rol' }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button class="dropdown-item text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @else
+                         {{-- Si no hay usuario 'web' logueado, mostrar el botón de login si no es una ruta de cliente --}}
+                         <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                         </a>
+                    @endif
                 </div>
             </div>
         </nav>
