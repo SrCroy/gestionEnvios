@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
 
     // Vehículos
     Route::get('/vehiculos', function () {
-        return view('vehiculos.index');
+        return view('vehiculos.VehiculosIndex');
     })->name('vehiculos.index');
 
     // Rutas
