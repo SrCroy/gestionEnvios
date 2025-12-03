@@ -35,9 +35,9 @@ Route::middleware('auth')->group(function () {
     })->name('vehiculos.index');
 
     // Rutas
-    Route::get('/rutas', function () {
-        return view('livewire.rutas.rutas');
-    })->name('rutas.index');
+    Route::get('/asignar-rutas', function () {
+        return view('asignar-rutas.index');
+    })->name('asignar.rutas');
 
     // Clientes (de la rama quevedo-rama-la-buena-quiero-pensar)
     Route::get('/clientes', [ClientesController::class, 'index'])->name('clientes.index');
@@ -61,9 +61,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/asignaciones/{id}', [AsignacionesController::class, 'destroy'])->name('asignaciones.destroy');
 });
 
-Route::get('/asignar-rutas', function () {
+/* Route::get('/asignar-rutas', function () {
     return view('asignar-rutas.index');
-})->name('asignar.rutas');
+})->name('asignar.rutas'); */
 
 Route::get('/paquetes', function (){
     return view('paquetes.index');

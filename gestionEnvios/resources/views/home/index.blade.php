@@ -133,7 +133,7 @@
             <a class="nav-link" href="{{ route('asignaciones.index') }}">
                 <i class="bi bi-calendar"></i>Asignaciones
             </a>
-            <a class="nav-link" href="{{ route('rutas.index') }}">
+            <a class="nav-link" href="{{ route('asignar.rutas') }}">
                 <i class="bi bi-map"></i>Rutas
             </a>
             <a class="nav-link" href="{{ route('motoristas.index') }}">
