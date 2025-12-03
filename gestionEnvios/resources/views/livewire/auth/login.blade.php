@@ -92,6 +92,12 @@
                 <button type="submit" class="btn w-100 mb-3" style="background: linear-gradient(135deg, var(--ues-blue) 0%, var(--ues-dark-blue) 100%); border: none; border-radius: 10px; padding: 12px; color: white; font-weight: 600; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0, 86, 179, 0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
                 </button>
+                 <div class="mt-3">
+                    <a href="{{ route('home') }}" class="btn w-100 btn-outline-warning"
+                        style="border-radius: 8px; padding: 10px; font-size: 0.95rem;">
+                        Volver
+                    </a>
+                </div>
 
                 <div class="text-center">
                     <a href="#" class="text-decoration-none">

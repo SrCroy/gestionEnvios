@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\paquetes;
 use App\Models\vehiculo;
 use App\Models\historial_envio;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AsignarRutas extends Component
@@ -34,6 +35,14 @@ class AsignarRutas extends Component
     // Método para forzar recarga
     public function recargarTodo()
     {
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
         $this->cargarFechasConAsignaciones();
         if (!empty($this->fechasConAsignaciones)) {
             if (!$this->fechaSeleccionada || !in_array($this->fechaSeleccionada, $this->fechasConAsignaciones)) {

@@ -148,11 +148,11 @@
         </div>
 
         <nav class="nav flex-column mt-3">
-            <a class="nav-link {{ request()->routeIs('clientes.dashboard') ? 'active' : '' }}" href="{{ route('clientes.dashboard') }}">
+            <a class="nav-link {{ request()->routeIs('cliente.dashboard') ? 'active' : '' }}" href="{{ route('cliente.dashboard') }}">
                 <i class="bi bi-grid-1x2-fill"></i> Resumen
             </a>
             
-            <a class="nav-link {{ request()->routeIs('clientes.paquete') ? 'active' : '' }}" href="{{ route('clientes.paquete') }}">
+            <a class="nav-link {{ request()->routeIs('cliente.paquete') ? 'active' : '' }}" href="{{ route('cliente.paquete') }}">
                 <i class="bi bi-box2-heart-fill"></i> Mis Paquetes
             </a>
 
@@ -170,17 +170,10 @@
                 <i class="bi bi-person-circle"></i> Editar Perfil
             </a>
             
-            <a class="nav-link" href="#">
-                <i class="bi bi-question-circle-fill"></i> Ayuda y Soporte
-            </a>
+          
         </nav>
 
-        <div class="p-3 mt-auto border-top border-light border-opacity-10 text-center">
-            <small class="text-white-50 d-block mb-1">¿Necesitas ayuda?</small>
-            <a href="tel:+50326661234" class="text-warning text-decoration-none fw-bold">
-                <i class="bi bi-telephone-fill me-1"></i> 2666-1234
-            </a>
-        </div>
+       
     </div>
 
     <!-- CONTENIDO -->

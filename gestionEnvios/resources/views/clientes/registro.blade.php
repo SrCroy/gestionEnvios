@@ -8,8 +8,8 @@
     <div class="login-container" style="background: white; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); overflow: hidden; width: 100%; max-width: 650px;">
 
         <div style="background: linear-gradient(135deg, var(--ues-blue), var(--ues-dark-blue)); color: white; padding: 30px; text-align: center;">
-            <h4 class="mb-1">Registro de Clientes</h4>
-            <small class="text-warning">Sistema de Gestión de Paquetes</small>
+            <h4 style="font-weight: 700;" class="mb-1">Registro de Clientes</h4>
+            <small style="font-weight: 500;" class="text-warning">Sistema de Gestión de Paquetes</small>
         </div>
 
         <div style="padding: 35px;">

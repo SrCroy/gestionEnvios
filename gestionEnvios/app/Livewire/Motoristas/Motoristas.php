@@ -5,13 +5,14 @@ namespace App\Livewire\Motoristas;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class Motoristas extends Component
 {
     use WithPagination;
 
-    // NO incluir public $motoristas aquí
+    
     
     public $name, $email, $direccion, $telefono, $password, $password_confirmation;
     public $motoristaId;
@@ -21,6 +22,14 @@ class Motoristas extends Component
 
     public function render()
     {
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
         $motoristas = User::where('rol', 'Motorista')
             ->orderBy('created_at', 'desc')
             ->paginate(10);

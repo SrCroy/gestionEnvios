@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Vehiculo;
 use App\Models\Asignacion;
-use Illuminate\Support\Facades\Auth; // <--- 1. IMPORTANTE: Importar Auth
+use Illuminate\Support\Facades\Auth;
 
 class Calendario extends Component
 {
@@ -25,35 +25,44 @@ class Calendario extends Component
 
     public function mount()
     {
-        // Cargar listas solo si es necesario (Opcional: podrías filtrar aquí también)
-        $this->motoristas = User::where('rol', 'motorista')->get();
+    
+        $this->motoristas = User::where('rol', 'Motorista')->get(); // Asegúrate de la mayúscula aquí también si aplica
         $this->vehiculos = Vehiculo::all();
     }
 
-    /** ABRIR MODAL CON NUEVA FECHA (CREAR) */
+ 
     public function abrirModal($fecha = null)
     {
-        // SEGURIDAD: Si es motorista, no le dejamos abrir el modal para CREAR
-        if (Auth::user()->rol !== 'admin') {
-            $this->dispatch('toast', ['message' => 'No tienes permiso para crear asignaciones.', 'type' => 'error']);
+        if (Auth::user()->rol !== 'Administrador') {
+            $this->dispatch('toast', [
+                'message' => 'No tienes permiso para crear asignaciones.', 
+                'type' => 'error'
+            ]);
             return;
         }
 
+       
+        if ($fecha && $fecha < now()->format('Y-m-d')) {
+            $this->dispatch('toast', [
+                'message' => 'No puedes generar asignaciones en fechas pasadas.', 
+                'type' => 'error'
+            ]);
+            return;
+        }
+        // --------------------------------------------------
+
         $this->reset(['idAsignacion', 'idMotorista', 'idVehiculo']);
-        $this->fecha = $fecha;
+        
+        $this->fecha = $fecha ?? now()->format('Y-m-d');
+        
         $this->dispatch('abrir-modal-show');
     }
 
-    /** ABRIR MODAL PARA EDITAR (VER DETALLES) */
+   
     public function editarAsignacion($id)
     {
         $asig = Asignacion::find($id);
         if (!$asig) return;
-
-        // Opcional: Si es motorista, cargamos los datos pero quizás quieras
-        // bloquear la edición en la vista o aquí mismo.
-        // Por ahora permitimos que se abra para que pueda VER el detalle,
-        // pero el método 'guardar' lo detendrá si intenta cambiar algo.
 
         $this->idAsignacion = $asig->id;
         $this->fecha        = $asig->fechaAsignacion->format('Y-m-d');
@@ -63,14 +72,10 @@ class Calendario extends Component
         $this->dispatch('abrir-modal-show');
     }
 
-    /** GUARDAR / ACTUALIZAR */
-    public function guardar()
+
+   public function guardar()
     {
-        // ---------------------------------------------------------
-        // SEGURIDAD: BLOQUEO CRÍTICO
-        // ---------------------------------------------------------
-        if (Auth::user()->rol !== 'admin') {
-            // Enviamos una alerta y detenemos la ejecución
+        if (Auth::user()->rol !== 'Administrador') {
             $this->dispatch('toast', [
                 'message' => 'Acceso denegado. Solo administradores pueden guardar.',
                 'type' => 'error'
@@ -78,11 +83,26 @@ class Calendario extends Component
             return;
         }
 
-        $this->validate([
-            'fecha'       => 'required|date',
+  
+        $rules = [
             'idMotorista' => 'required|integer',
             'idVehiculo'  => 'required|integer',
-        ]);
+        ];
+
+     
+        if (!$this->idAsignacion) {
+            $rules['fecha'] = 'required|date|after_or_equal:today'; 
+        } else {
+           
+            $rules['fecha'] = 'required|date';
+        }
+        
+        $messages = [
+            'fecha.after_or_equal' => 'No se pueden generar asignaciones en fechas pasadas.',
+        ];
+
+        $this->validate($rules, $messages);
+        // ----------------------------------
 
         $asig = $this->idAsignacion
             ? Asignacion::find($this->idAsignacion)
@@ -98,17 +118,13 @@ class Calendario extends Component
         $this->dispatch('cerrar-modal');
         $this->dispatch('toast', ['message' => 'Asignación guardada.', 'type' => 'success']);
         
-        // Emitir evento para recargar el calendario en el frontend si es necesario
         $this->dispatch('recargar-calendario'); 
     }
 
     /** ELIMINAR */
     public function eliminar()
     {
-        // ---------------------------------------------------------
-        // SEGURIDAD: BLOQUEO CRÍTICO
-        // ---------------------------------------------------------
-        if (Auth::user()->rol !== 'admin') {
+        if (Auth::user()->rol !== 'Administrador') {
             $this->dispatch('toast', [
                 'message' => 'No tienes permiso para eliminar.',
                 'type' => 'error'

@@ -88,6 +88,12 @@
                         Registrarse
                     </a>
                 </div>
+                <div class="mt-3">
+                    <a href="{{ route('home') }}" class="btn w-100 btn-outline-warning"
+                        style="border-radius: 8px; padding: 10px; font-size: 0.95rem;">
+                        Volver
+                    </a>
+                </div>
 
             </form>
         </div>

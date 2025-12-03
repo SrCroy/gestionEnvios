@@ -120,27 +120,41 @@
         </div>
 
         <nav class="nav flex-column mt-3">
-            <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
-                <i class="bi bi-speedometer2"></i>Dashboard
-            </a>
-            <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="#paquetes">
-                <i class="bi bi-box-seam"></i>Gestión Paquetes
-            </a>
-            <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
-                <i class="bi bi-people"></i>Clientes
-            </a>
-            <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
-                <i class="bi bi-truck"></i>Vehículos
-            </a>
-            <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
-                <i class="bi bi-calendar"></i>Asignaciones
-            </a>
-            <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
-                <i class="bi bi-map"></i>Rutas
-            </a>
-            <a class="nav-link {{ request()->routeIs('motoristas.*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
-                <i class="bi bi-person-badge"></i>Motoristas
-            </a>
+            
+            {{-- SECCIÓN: ADMINISTRADOR --}}
+            @if(Auth::user()->rol === 'Administrador')
+                <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>Dashboard
+                </a>
+                <a class="nav-link {{ request()->routeIs('paquetes.*') ? 'active' : '' }}" href="#paquetes">
+                    <i class="bi bi-box-seam"></i>Gestión Paquetes
+                </a>
+                <a class="nav-link {{ request()->routeIs('clientes.*') ? 'active' : '' }}" href="{{ route('clientes.index') }}">
+                    <i class="bi bi-people"></i>Clientes
+                </a>
+                <a class="nav-link {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}" href="{{ route('vehiculos.index') }}">
+                    <i class="bi bi-truck"></i>Vehículos
+                </a>
+            @endif
+
+            {{-- SECCIÓN: COMÚN (Admin y Motorista) --}}
+            {{-- Asumimos que si entra aqui tiene uno de los dos roles, pero validamos por seguridad --}}
+            @if(in_array(Auth::user()->rol, ['Administrador', 'Motorista']))
+                <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
+                    <i class="bi bi-calendar"></i>Asignaciones
+                </a>
+                <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
+                    <i class="bi bi-map"></i>Rutas
+                </a>
+            @endif
+
+            {{-- SECCIÓN: ADMINISTRADOR (Gestión de usuarios/motoristas) --}}
+            @if(Auth::user()->rol === 'Administrador')
+                <a class="nav-link {{ request()->routeIs('motoristas.*') ? 'active' : '' }}" href="{{ route('motoristas.index') }}">
+                    <i class="bi bi-person-badge"></i>Motoristas
+                </a>
+            @endif
+
         </nav>
 
         <div class="p-3 mt-auto border-top border-light small text-white-50">
@@ -148,7 +162,6 @@
             <div><i class="bi bi-building me-2"></i>UES FMO</div>
         </div>
     </div>
-
     <div class="content p-0">
 
         <nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top">
@@ -162,6 +175,7 @@
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                             <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name ?? 'Usuario' }}
+                            <span class="badge bg-secondary ms-1">{{ Auth::user()->rol ?? 'Rol' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
@@ -223,13 +237,9 @@
                 close: true,
                 gravity: "top", 
                 position: "right", 
-                // --- AQUÍ ESTÁ EL CAMBIO ---
-                // Antes: backgroundColor: colors[type]...
-                // Ahora: usamos el objeto style
                 style: {
                     background: colors[type] || colors['success'],
                 },
-                // ---------------------------
                 stopOnFocus: true, 
             }).showToast();
         }
@@ -248,7 +258,6 @@
                 const modalId = Array.isArray(id) ? id[0] : id;
                 const el = document.getElementById(modalId);
                 if(el) {
-                    // getOrCreateInstance recupera el modal si ya existe, evitando duplicados
                     bootstrap.Modal.getOrCreateInstance(el).show();
                 }
             });
@@ -258,8 +267,7 @@
                 const modalId = Array.isArray(id) ? id[0] : id;
                 const el = document.getElementById(modalId);
                 if(el) {
-                    // --- SOLUCIÓN AL ERROR ARIA-HIDDEN ---
-                    // Quitamos el foco del botón antes de ocultar el modal
+                    // Quitamos el foco del botón antes de ocultar
                     if (document.activeElement instanceof HTMLElement) {
                         document.activeElement.blur();
                     }

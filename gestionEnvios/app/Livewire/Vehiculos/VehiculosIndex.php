@@ -3,6 +3,7 @@
 namespace App\Livewire\Vehiculos;
 
 use App\Models\vehiculo;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class VehiculosIndex extends Component
@@ -203,6 +204,16 @@ class VehiculosIndex extends Component
     
     public function render()
     {
+
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+
         $query = vehiculo::orderBy('created_at', 'desc');
         
         if ($this->filtroEstado !== 'todos') {
