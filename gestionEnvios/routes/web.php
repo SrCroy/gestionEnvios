@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\MotoristasController;
 use App\Http\Controllers\VehiculoController;
+use App\Livewire\Clientes\LoginClientes;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\AsignacionesController;
+use App\Http\Controllers\ClienteAuthController;
+use App\Http\Controllers\ClienteRegistro;
 
 Route::get('/', function () {
     return view('home.dashboard');
@@ -60,6 +63,19 @@ Route::middleware('auth')->group(function () {
     Route::put('/asignaciones/{id}', [AsignacionesController::class, 'update'])->name('asignaciones.update');
     Route::delete('/asignaciones/{id}', [AsignacionesController::class, 'destroy'])->name('asignaciones.destroy');
 });
+Route::get('/cliente/login', [ClienteAuthController::class, 'showLoginForm'])->name('cliente.login');
+Route::post('/cliente/login', [ClienteAuthController::class, 'login'])->name('cliente.login.store');
+
+
+Route::middleware('auth:cliente')->group(function () {
+    Route::get('/cliente/dashboard', function () {
+        return 'Bienvenido cliente';
+    })->name('clientes.dashboard');
+});
+
+// routes/web.php
+Route::get('/cliente/registro', [ClienteRegistro::class, 'showRegisterForm'])->name('cliente.register');
+Route::post('/cliente/registro', [ClienteRegistro::class, 'register'])->name('cliente.register.store');
 
 Route::get('/asignar-rutas', function () {
     return view('asignar-rutas.index');
