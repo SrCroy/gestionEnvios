@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Paquete;
 use App\Models\Vehiculo;
 use App\Models\historial_envio;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
@@ -29,7 +30,29 @@ class AsignarRutas extends Component
     public $capacidadMaxima = 0.0;
     public $porcentajeUso = 0.0;
     public $vehiculoAsignado = null;
-    public $pesoSeleccionado = 0.0;
+
+    // Método para forzar recarga
+    public function recargarTodo()
+    {
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+        $this->cargarFechasConAsignaciones();
+        if (!empty($this->fechasConAsignaciones)) {
+            if (!$this->fechaSeleccionada || !in_array($this->fechaSeleccionada, $this->fechasConAsignaciones)) {
+                $this->fechaSeleccionada = $this->fechasConAsignaciones[0];
+            }
+            $this->cargarMotoristasDelDia();
+            if ($this->motoristaSeleccionado) {
+                $this->cargarDatosMotorista();
+            }
+        }
+    }
 
     public function mount()
     {

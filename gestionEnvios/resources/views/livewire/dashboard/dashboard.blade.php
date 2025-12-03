@@ -3,12 +3,28 @@
 @section('title', 'Dashboard - UES FMO')
 
 @section('styles')
-    <!-- Google Maps API -->
-    <link rel="stylesheet" href="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7_z1Byfn5Yoj280LSGJZl8QTeRnPCvbw">
+    <style>
+        /* ESTO ES OBLIGATORIO: Si no defines la altura, el mapa no se ve */
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 3px solid #0056b3; /* Borde azul UES */
+        }
+
+        /* Estilo para las cajas de información flotantes del mapa */
+        .route-info {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
 @endsection
 
 @section('content')
-    <!-- UES Header -->
     <div class="ues-header">
         <div class="row align-items-center">
             <div class="col-md-8">
@@ -29,7 +45,6 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card stat-card text-white" style="background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);">
@@ -93,7 +108,6 @@
         </div>
     </div>
 
-    <!-- Mapa de Distribución -->
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -114,9 +128,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="map"></div>
+                    <div id="map" wire:ignore></div>
                     
-                    <!-- Información de Distribución -->
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <div class="route-info">
@@ -191,11 +204,10 @@
         </div>
     </div>
 
-    <!-- Resumen Rápido -->
     <div class="row mt-4">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white">
                     <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Actividad Reciente</h6>
                 </div>
                 <div class="card-body">
@@ -203,54 +215,57 @@
                         <div class="list-group-item px-0">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-1">Paquete #00125 entregado</h6>
-                                <small>Hace 5 min</small>
+                                <small class="text-muted">Hace 5 min</small>
                             </div>
-                            <p class="mb-1">Cliente: Juan Pérez - San Miguel Centro</p>
+                            <p class="mb-1 small">Cliente: Juan Pérez - San Miguel Centro</p>
                         </div>
                         <div class="list-group-item px-0">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-1">Nuevo paquete registrado</h6>
-                                <small>Hace 15 min</small>
+                                <small class="text-muted">Hace 15 min</small>
                             </div>
-                            <p class="mb-1">Cliente: María García - Ciudad Universitaria</p>
+                            <p class="mb-1 small">Cliente: María García - Ciudad Universitaria</p>
                         </div>
                         <div class="list-group-item px-0">
                             <div class="d-flex w-100 justify-content-between">
                                 <h6 class="mb-1">Vehículo #003 en ruta</h6>
-                                <small>Hace 25 min</small>
+                                <small class="text-muted">Hace 25 min</small>
                             </div>
-                            <p class="mb-1">Ruta Carretera al Cuco - 28 paquetes</p>
+                            <p class="mb-1 small">Ruta Carretera al Cuco - 28 paquetes</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-white">
                     <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Estadísticas del Día</h6>
                 </div>
                 <div class="card-body">
-                    <div class="row text-center">
+                    <div class="row text-center mb-4">
                         <div class="col-4">
                             <h4 class="text-primary">{{ $stats['entregados_hoy'] ?? 856 }}</h4>
-                            <small>Entregados</small>
+                            <small class="text-muted">Entregados</small>
                         </div>
                         <div class="col-4">
                             <h4 class="text-warning">{{ $stats['en_transito'] ?? 289 }}</h4>
-                            <small>En camino</small>
+                            <small class="text-muted">En camino</small>
                         </div>
                         <div class="col-4">
                             <h4 class="text-info">103</h4>
-                            <small>Pendientes</small>
+                            <small class="text-muted">Pendientes</small>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <div class="progress mb-2">
-                            <div class="progress-bar bg-success" style="width: 70%">70% Entregado</div>
+                    <div>
+                        <small class="mb-1 d-block">Progreso de Entregas</small>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 70%"></div>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar bg-warning" style="width: 23%">23% En tránsito</div>
+                        
+                        <small class="mb-1 d-block">Vehículos en Uso</small>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
                         </div>
                     </div>
                 </div>
@@ -260,8 +275,7 @@
 @endsection
 
 @section('scripts')
-    <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7_z1Byfn5Yoj280LSGJZl8QTeRnPCvbw&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7_z1Byfn5Yoj280LSGJZl8QTeRnPCvbw" async defer></script>
     
     <script>
         let map;
@@ -271,31 +285,23 @@
         // COORDENADAS EXACTAS de la UES FMO
         const uesFMO = { lat: 13.439920, lng: -88.158602 };
 
+        // Función global de inicio
+        window.onload = function() {
+            // Verificamos si el div del mapa existe antes de intentar cargar nada
+            if(document.getElementById("map")) {
+                initMap();
+            }
+        };
+
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 15,
                 center: uesFMO,
                 styles: [
-                    {
-                        "featureType": "all",
-                        "elementType": "labels.text.fill",
-                        "stylers": [{"gamma": 0.01}, {"lightness": 20}]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "all",
-                        "stylers": [{"visibility": "off"}]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "all",
-                        "stylers": [{"saturation": -100}, {"lightness": 45}]
-                    },
-                    {
-                        "featureType": "water",
-                        "elementType": "all",
-                        "stylers": [{"color": "#3498db"}, {"visibility": "on"}]
-                    }
+                    { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{"gamma": 0.01}, {"lightness": 20}] },
+                    { "featureType": "poi", "elementType": "all", "stylers": [{"visibility": "off"}] },
+                    { "featureType": "road", "elementType": "all", "stylers": [{"saturation": -100}, {"lightness": 45}] },
+                    { "featureType": "water", "elementType": "all", "stylers": [{"color": "#3498db"}, {"visibility": "on"}] }
                 ]
             });
 
@@ -303,16 +309,11 @@
             directionsRenderer = new google.maps.DirectionsRenderer({
                 map: map,
                 suppressMarkers: false,
-                polylineOptions: {
-                    strokeColor: "#0056b3",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 5
-                }
+                polylineOptions: { strokeColor: "#0056b3", strokeOpacity: 0.8, strokeWeight: 5 }
             });
 
-            // Agregar UES FMO en la ubicación EXACTA
+            // Cargar marcadores
             addUESFMO();
-            // Agregar rutas de distribución reales
             addDistributionRoutes();
         }
 
@@ -326,25 +327,19 @@
             const uesMarker = new google.maps.Marker({
                 position: uesFMO,
                 map: map,
-                title: "UES - FACULTAD MULTIDISCIPLINARIA ORIENTAL (UBICACIÓN EXACTA)",
+                title: "UES - FACULTAD MULTIDISCIPLINARIA ORIENTAL",
                 icon: uesIcon,
                 animation: google.maps.Animation.BOUNCE
             });
 
             const infoWindow = new google.maps.InfoWindow({
                 content: `
-                    <div class="p-3" style="min-width: 320px;">
-                        <h5 class="text-primary">🏫 UES FMO - UBICACIÓN EXACTA</h5>
-                        <p class="mb-1"><strong>📍 Facultad:</strong> Multidisciplinaria Oriental</p>
-                        <p class="mb-1"><strong>🗺️ Dirección:</strong> Carretera al Cuco Km 144</p>
-                        <p class="mb-1"><strong>📍 Coordenadas:</strong> 13.439920, -88.158602</p>
-                        <p class="mb-1"><strong>🏙️ Ciudad:</strong> San Miguel, CP 3301</p>
-                        <p class="mb-1"><strong>📦 Capacidad:</strong> 1,500 paquetes/día</p>
-                        <p class="mb-1"><strong>🕒 Horario:</strong> 6:00 AM - 8:00 PM</p>
-                        <p class="mb-0"><strong>🚚 Flota:</strong> 10 vehículos</p>
+                    <div class="p-3" style="min-width: 250px;">
+                        <h6 class="text-primary mb-2">🏫 UES FMO</h6>
+                        <p class="mb-1"><strong>📍 Dirección:</strong> Carretera al Cuco Km 144</p>
+                        <p class="mb-1"><strong>📦 Capacidad:</strong> 1,500 paq/día</p>
                         <div class="mt-2">
-                            <span class="badge bg-primary">UBICACIÓN EXACTA</span>
-                            <span class="badge bg-success">CARRETERA AL CUCO</span>
+                            <span class="badge bg-primary">CENTRO DISTRIBUCIÓN</span>
                         </div>
                     </div>
                 `
@@ -354,7 +349,7 @@
                 infoWindow.open(map, uesMarker);
             });
 
-            // Círculo para destacar la ubicación EXACTA
+            // Círculo de área
             new google.maps.Circle({
                 strokeColor: "#0056b3",
                 strokeOpacity: 0.8,
@@ -363,52 +358,52 @@
                 fillOpacity: 0.2,
                 map: map,
                 center: uesFMO,
-                radius: 80 // 80 metros
+                radius: 80
             });
         }
 
         function addDistributionRoutes() {
-            // Puntos de entrega REALES desde UES FMO (Carretera al Cuco)
+            // DATOS RESTAURADOS COMPLETOS
             const deliveryPoints = [
                 {
                     name: "San Miguel Centro",
                     position: { lat: 13.4832, lng: -88.1832 },
                     paquetes: 45,
                     distancia: "18.5 km",
-                    tipo: "urbano"
+                    tipo: "Urbano"
                 },
                 {
                     name: "Ciudad Universitaria",
                     position: { lat: 13.7166, lng: -89.2022 },
                     paquetes: 32,
-                    distancia: "12.3 km", 
-                    tipo: "educativo"
+                    distancia: "12.3 km",
+                    tipo: "Educativo"
                 },
                 {
                     name: "Pueblos Carretera al Cuco",
                     position: { lat: 13.4200, lng: -88.1400 },
                     paquetes: 28,
                     distancia: "8.7 km",
-                    tipo: "rural"
+                    tipo: "Rural"
                 },
                 {
                     name: "Zona Industrial San Miguel",
                     position: { lat: 13.4800, lng: -88.1700 },
                     paquetes: 35,
                     distancia: "15.2 km",
-                    tipo: "industrial"
+                    tipo: "Industrial"
                 },
                 {
                     name: "Barrios Residenciales",
                     position: { lat: 13.4500, lng: -88.1650 },
                     paquetes: 22,
                     distancia: "4.3 km",
-                    tipo: "residencial"
+                    tipo: "Residencial"
                 }
             ];
 
-            // Crear rutas reales por calles
             deliveryPoints.forEach((point, index) => {
+                // 1. Crear Marcador
                 const marker = new google.maps.Marker({
                     position: point.position,
                     map: map,
@@ -419,26 +414,27 @@
                     }
                 });
 
+                // 2. Crear Ventana de Información (InfoWindow) RESTAURADA
                 const infoWindow = new google.maps.InfoWindow({
                     content: `
                         <div class="p-2">
-                            <h6 class="text-success">📦 ${point.name}</h6>
+                            <h6 class="text-success mb-2">📦 ${point.name}</h6>
                             <p class="mb-1"><strong>Paquetes:</strong> ${point.paquetes}</p>
-                            <p class="mb-1"><strong>Distancia desde UES:</strong> ${point.distancia}</p>
+                            <p class="mb-1"><strong>Distancia:</strong> ${point.distancia}</p>
                             <p class="mb-1"><strong>Tipo:</strong> ${point.tipo}</p>
-                            <p class="mb-0"><strong>Estado:</strong> Entrega programada</p>
-                            <div class="mt-1">
-                                <span class="badge bg-success">PUNTO ENTREGA</span>
+                            <div class="mt-2">
+                                <span class="badge bg-success">ENTREGA PROGRAMADA</span>
                             </div>
                         </div>
                     `
                 });
 
+                // 3. Evento Click para abrir la ventana
                 marker.addListener("click", () => {
                     infoWindow.open(map, marker);
                 });
 
-                // Crear ruta por calles reales
+                // 4. Calcular Ruta visual
                 setTimeout(() => {
                     calculateRoute(uesFMO, point.position, index);
                 }, index * 600);
@@ -456,13 +452,13 @@
                 },
                 (response, status) => {
                     if (status === "OK") {
-                        const routeRenderer = new google.maps.DirectionsRenderer({
+                        new google.maps.DirectionsRenderer({
                             map: map,
                             directions: response,
                             suppressMarkers: true,
                             polylineOptions: {
                                 strokeColor: routeColors[routeIndex % routeColors.length],
-                                strokeOpacity: 0.7,
+                                strokeOpacity: 0.6,
                                 strokeWeight: 4
                             }
                         });
@@ -471,15 +467,17 @@
             );
         }
 
-        // Botones del mapa
-        document.getElementById('zoomToUES').addEventListener('click', function() {
-            map.setZoom(16);
-            map.setCenter(uesFMO);
+        // Listeners de botones externos
+        const zoomBtn = document.getElementById('zoomToUES');
+        if(zoomBtn) zoomBtn.addEventListener('click', () => { 
+            map.setZoom(16); 
+            map.setCenter(uesFMO); 
         });
 
-        document.getElementById('showAllRoutes').addEventListener('click', function() {
-            map.setZoom(13);
-            map.setCenter(uesFMO);
+        const routesBtn = document.getElementById('showAllRoutes');
+        if(routesBtn) routesBtn.addEventListener('click', () => { 
+            map.setZoom(12); 
+            map.setCenter(uesFMO); 
         });
     </script>
 @endsection

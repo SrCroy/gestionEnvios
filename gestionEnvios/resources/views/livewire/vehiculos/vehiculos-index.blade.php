@@ -1,13 +1,4 @@
 <div>
-    <style>
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            white-space: nowrap;
-        }
-    </style>
-    
-    <!-- UES Header -->
     <div class="ues-header">
         <div class="row align-items-center">
             <div class="col-md-8">
@@ -26,7 +17,6 @@
         </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-lg col-md-6 mb-3">
             <div class="card stat-card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -43,7 +33,6 @@
                 </div>
             </div>
         </div>
-
         <div class="col-lg col-md-6 mb-3">
             <div class="card stat-card text-white" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
                 <div class="card-body">
@@ -59,7 +48,6 @@
                 </div>
             </div>
         </div>
-
         <div class="col-lg col-md-6 mb-3">
             <div class="card stat-card text-white" style="background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);">
                 <div class="card-body">
@@ -75,7 +63,6 @@
                 </div>
             </div>
         </div>
-
         <div class="col-lg col-md-6 mb-3">
             <div class="card stat-card text-white" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
                 <div class="card-body">
@@ -91,7 +78,6 @@
                 </div>
             </div>
         </div>
-
         <div class="col-lg col-md-6 mb-3">
             <div class="card stat-card text-white" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
                 <div class="card-body">
@@ -109,7 +95,6 @@
         </div>
     </div>
 
-    <!-- Filtros -->
     <div class="card border-0 shadow-sm mb-3">
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2">
@@ -137,7 +122,6 @@
         </div>
     </div>
 
-    <!-- Tabla -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white">
             <h5 class="mb-0 text-dark">
@@ -194,9 +178,6 @@
                             <td colspan="8" class="text-center py-4">
                                 <i class="bi bi-inbox display-4 text-muted"></i>
                                 <p class="mt-2 text-muted">No hay vehículos registrados</p>
-                                <button wire:click="create" class="btn btn-primary">
-                                    <i class="bi bi-plus-circle me-2"></i>Registrar Primer Vehículo
-                                </button>
                             </td>
                         </tr>
                         @endforelse
@@ -206,16 +187,15 @@
         </div>
     </div>
 
-    <!-- Modal Crear (Bootstrap Native) -->
+    <!-- Modal nuevo vehículo -->
     <div class="modal fade" id="createModal" tabindex="-1" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="bi bi-plus-circle me-2"></i>
                         Registrar Nuevo Vehículo
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" wire:click="$dispatch('closeModal', 'createModal')"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit.prevent="store">
@@ -244,32 +224,27 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" wire:click="$dispatch('closeModal', 'createModal')">Cancelar</button>
                     <button type="button" class="btn btn-primary" wire:click="store" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="store">Guardar Vehículo</span>
-                        <span wire:loading wire:target="store">
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            Guardando...
-                        </span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Editar (Bootstrap Native) -->
+    <!-- Modal editar vehículo -->
     <div class="modal fade" id="editModal" tabindex="-1" wire:ignore.self>
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="bi bi-pencil-square me-2"></i>
                         Editar Vehículo
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" wire:click="$dispatch('closeModal', 'editModal')"></button>
                 </div>
                 <div class="modal-body">
-                    <form wire:submit.prevent="update">
+                    <form wire:submit.prevent="update" wire:key="form-edit-{{$vehiculoId}}">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Marca <span class="text-danger">*</span></label>
@@ -305,26 +280,22 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" wire:click="$dispatch('closeModal', 'editModal')">Cancelar</button>
                     <button type="button" class="btn btn-warning" wire:click="update" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="update">Actualizar Vehículo</span>
-                        <span wire:loading wire:target="update">
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            Actualizando...
-                        </span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Eliminar (Bootstrap Native) -->
+    <!-- Modal eliminar vehiculo -->
     <div class="modal fade" id="deleteModal" tabindex="-1" wire:ignore.self>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" wire:click="$dispatch('closeModal', 'deleteModal')"></button>
                 </div>
                 <div class="modal-body">
                     @if($vehiculoToDelete)
@@ -340,36 +311,12 @@
                     </span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" wire:click="$dispatch('closeModal', 'deleteModal')">Cancelar</button>
                     <button type="button" class="btn btn-danger" wire:click="delete" wire:loading.attr="disabled">
                         <span wire:loading.remove wire:target="delete">Eliminar</span>
-                        <span wire:loading wire:target="delete">
-                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                            Eliminando...
-                        </span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        // Escuchar eventos de Livewire para abrir/cerrar modales
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('openModal', (modalId) => {
-                const modal = new bootstrap.Modal(document.getElementById(modalId[0]));
-                modal.show();
-            });
-
-            Livewire.on('closeModal', (modalId) => {
-                const modalElement = document.getElementById(modalId[0]);
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                if (modal) {
-                    modal.hide();
-                }
-            });
-        });
-    </script>
-    @endpush
 </div>

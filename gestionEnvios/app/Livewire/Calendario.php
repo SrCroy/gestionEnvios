@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\User;
 use App\Models\Vehiculo;
 use App\Models\Asignacion;
+use Illuminate\Support\Facades\Auth;
 
 class Calendario extends Component
 {
@@ -24,23 +25,40 @@ class Calendario extends Component
 
     public function mount()
     {
-        $this->motoristas = User::where('rol', 'motorista')->get();
+    
+        $this->motoristas = User::where('rol', 'Motorista')->get(); // Asegúrate de la mayúscula aquí también si aplica
         $this->vehiculos = Vehiculo::all();
     }
 
-    /** ABRIR MODAL CON NUEVA FECHA */
+ 
     public function abrirModal($fecha = null)
     {
+        if (Auth::user()->rol !== 'Administrador') {
+            $this->dispatch('toast', [
+                'message' => 'No tienes permiso para crear asignaciones.', 
+                'type' => 'error'
+            ]);
+            return;
+        }
+
+       
+        if ($fecha && $fecha < now()->format('Y-m-d')) {
+            $this->dispatch('toast', [
+                'message' => 'No puedes generar asignaciones en fechas pasadas.', 
+                'type' => 'error'
+            ]);
+            return;
+        }
+        // --------------------------------------------------
+
         $this->reset(['idAsignacion', 'idMotorista', 'idVehiculo']);
-
-        // Asignar la fecha directamente
-        $this->fecha = $fecha;
-
-        // Abrir modal
+        
+        $this->fecha = $fecha ?? now()->format('Y-m-d');
+        
         $this->dispatch('abrir-modal-show');
     }
 
-    /** ABRIR MODAL PARA EDITAR */
+   
     public function editarAsignacion($id)
     {
         $asig = Asignacion::find($id);
@@ -54,14 +72,37 @@ class Calendario extends Component
         $this->dispatch('abrir-modal-show');
     }
 
-    /** GUARDAR / ACTUALIZAR */
-    public function guardar()
+
+   public function guardar()
     {
-        $this->validate([
-            'fecha'        => 'required|date',
-            'idMotorista'  => 'required|integer',
-            'idVehiculo'   => 'required|integer',
-        ]);
+        if (Auth::user()->rol !== 'Administrador') {
+            $this->dispatch('toast', [
+                'message' => 'Acceso denegado. Solo administradores pueden guardar.',
+                'type' => 'error'
+            ]);
+            return;
+        }
+
+  
+        $rules = [
+            'idMotorista' => 'required|integer',
+            'idVehiculo'  => 'required|integer',
+        ];
+
+     
+        if (!$this->idAsignacion) {
+            $rules['fecha'] = 'required|date|after_or_equal:today'; 
+        } else {
+           
+            $rules['fecha'] = 'required|date';
+        }
+        
+        $messages = [
+            'fecha.after_or_equal' => 'No se pueden generar asignaciones en fechas pasadas.',
+        ];
+
+        $this->validate($rules, $messages);
+        // ----------------------------------
 
         $asig = $this->idAsignacion
             ? Asignacion::find($this->idAsignacion)
@@ -75,18 +116,30 @@ class Calendario extends Component
         $this->idAsignacion = $asig->id;
 
         $this->dispatch('cerrar-modal');
+        $this->dispatch('toast', ['message' => 'Asignación guardada.', 'type' => 'success']);
+        
+        $this->dispatch('recargar-calendario'); 
     }
 
     /** ELIMINAR */
     public function eliminar()
     {
+        if (Auth::user()->rol !== 'Administrador') {
+            $this->dispatch('toast', [
+                'message' => 'No tienes permiso para eliminar.',
+                'type' => 'error'
+            ]);
+            return;
+        }
+
         if ($this->idAsignacion) {
             Asignacion::where('id', $this->idAsignacion)->delete();
         }
 
         $this->reset('idAsignacion', 'idMotorista', 'idVehiculo');
-
         $this->dispatch('cerrar-modal');
+        $this->dispatch('toast', ['message' => 'Asignación eliminada.', 'type' => 'success']);
+        $this->dispatch('recargar-calendario');
     }
 
     public function render()

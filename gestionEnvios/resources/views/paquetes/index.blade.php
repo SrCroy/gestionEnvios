@@ -1,4 +1,4 @@
-@extends('home.app')
+@extends('home.index')
 
 @section('content')
 

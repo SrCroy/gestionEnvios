@@ -3,6 +3,7 @@
 namespace App\Livewire\Vehiculos;
 
 use App\Models\vehiculo;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class VehiculosIndex extends Component
@@ -15,7 +16,7 @@ class VehiculosIndex extends Component
     public $volumenMaximo = '';
     public $estado = '';
     
-    // Control de modales - Usaremos eventos JS
+    // Control de modales
     public $vehiculoToDelete;
     
     // Filtro
@@ -29,11 +30,11 @@ class VehiculosIndex extends Component
             'modelo' => 'required|string|max:100',
             'pesoMaximo' => 'required|numeric|min:0|max:99999999.99',
             'volumenMaximo' => 'required|numeric|min:0|max:99999999.99',
-            'estado' => 'nullable|in:' . implode(',', vehiculo::getEstados())
+            // CAMBIO: 'required' evita que se guarde "-- Seleccione --" (valor vacío)
+            'estado' => 'required|in:' . implode(',', vehiculo::getEstados())
         ];
     }
     
-    // Mensajes de validación personalizados
     protected $messages = [
         'marca.required' => 'La marca es obligatoria',
         'marca.max' => 'La marca no puede exceder 100 caracteres',
@@ -45,20 +46,25 @@ class VehiculosIndex extends Component
         'volumenMaximo.required' => 'El volumen máximo es obligatorio',
         'volumenMaximo.numeric' => 'El volumen máximo debe ser un número',
         'volumenMaximo.min' => 'El volumen máximo debe ser mayor o igual a 0',
+        'estado.required' => 'Debe seleccionar un estado válido', // Mensaje para el select vacío
         'estado.in' => 'El estado seleccionado no es válido'
     ];
     
-    // Abrir modal de creación
     public function create()
     {
         $this->resetForm();
         $this->dispatch('openModal', 'createModal');
     }
     
-    // Guardar nuevo vehículo
     public function store()
     {
-        $this->validate();
+        // Validamos (el estado no se valida aquí porque se asigna automático)
+        $this->validate([
+            'marca' => 'required|string|max:100',
+            'modelo' => 'required|string|max:100',
+            'pesoMaximo' => 'required|numeric|min:0',
+            'volumenMaximo' => 'required|numeric|min:0',
+        ]);
         
         vehiculo::create([
             'marca' => $this->marca,
@@ -71,14 +77,13 @@ class VehiculosIndex extends Component
         $this->dispatch('closeModal', 'createModal');
         $this->resetForm();
         
-        // ✅ Notificación verde al crear
+        // MENSAJE EXACTO SOLICITADO
         $this->dispatch('toast', [
-            'message' => 'Vehículo agregado exitosamente',
+            'message' => 'Vehículo agregado', 
             'type' => 'success'
         ]);
     }
     
-    // Abrir modal de edición
     public function edit($id)
     {
         $vehiculo = vehiculo::findOrFail($id);
@@ -93,26 +98,40 @@ class VehiculosIndex extends Component
         $this->dispatch('openModal', 'editModal');
     }
     
-    // Actualizar vehículo
     public function update()
     {
-        $this->validate();
+        $this->validate(); // Aquí sí valida que el estado sea required
         
         $vehiculo = vehiculo::findOrFail($this->vehiculoId);
-        
-        // Validar transiciones de estado lógicas
-        if ($vehiculo->estado === vehiculo::ESTADO_EN_RUTA && 
-            $this->estado !== vehiculo::ESTADO_DISPONIBLE && 
-            $this->estado !== vehiculo::ESTADO_MANTENIMIENTO) {
-            
-            $this->addError('estado', 'Un vehículo en ruta solo puede pasar a Disponible o Mantenimiento');
-            
-            $this->dispatch('toast', [
-                'message' => 'Transición de estado no permitida',
-                'type' => 'error'
-            ]);
+        $estadoActual = $vehiculo->estado;
+        $nuevoEstado = $this->estado;
+
+        // --- INICIO DE VALIDACIONES DE ESTADO ---
+
+        // 1. Validar transición desde "En Ruta"
+        // Un vehículo En Ruta solo puede pasar a Disponible o Mantenimiento
+        if ($estadoActual === vehiculo::ESTADO_EN_RUTA) {
+            if ($nuevoEstado !== vehiculo::ESTADO_DISPONIBLE && $nuevoEstado !== vehiculo::ESTADO_MANTENIMIENTO && $nuevoEstado !== vehiculo::ESTADO_EN_RUTA) {
+                $this->addError('estado', 'Un vehículo "En Ruta" solo puede pasar a "Disponible" o "Mantenimiento".');
+                return;
+            }
+        }
+
+        // 2. Validar transición desde "Mantenimiento" hacia "En Ruta"
+        // Un vehículo en Mantenimiento NO puede pasar a En Ruta
+        if ($estadoActual === vehiculo::ESTADO_MANTENIMIENTO && $nuevoEstado === vehiculo::ESTADO_EN_RUTA) {
+            $this->addError('estado', 'Un vehículo en "Mantenimiento" no puede pasar directamente a "En Ruta".');
             return;
         }
+
+        // 3. Validar transición desde "Fuera de Servicio" hacia "En Ruta"
+        // Un vehículo Fuera de Servicio NO puede pasar a En Ruta
+        if ($estadoActual === vehiculo::ESTADO_FUERA_SERVICIO && $nuevoEstado === vehiculo::ESTADO_EN_RUTA) {
+            $this->addError('estado', 'Un vehículo "Fuera de Servicio" no puede pasar a "En Ruta".');
+            return;
+        }
+
+        // --- FIN DE VALIDACIONES DE ESTADO ---
         
         $vehiculo->update([
             'marca' => $this->marca,
@@ -125,21 +144,19 @@ class VehiculosIndex extends Component
         $this->dispatch('closeModal', 'editModal');
         $this->resetForm();
         
-        // ✅ Notificación verde al actualizar
+        // MENSAJE EXACTO SOLICITADO
         $this->dispatch('toast', [
-            'message' => 'Vehículo actualizado correctamente',
+            'message' => 'Vehículo Actualizado',
             'type' => 'success'
         ]);
     }
     
-    // Confirmar eliminación
     public function confirmDelete($id)
     {
         $this->vehiculoToDelete = vehiculo::findOrFail($id);
         $this->dispatch('openModal', 'deleteModal');
     }
     
-    // Eliminar vehículo
     public function delete()
     {
         try {
@@ -152,15 +169,12 @@ class VehiculosIndex extends Component
                 return;
             }
             
-            $marca = $this->vehiculoToDelete->marca;
-            $modelo = $this->vehiculoToDelete->modelo;
-            
             $this->vehiculoToDelete->delete();
             $this->dispatch('closeModal', 'deleteModal');
             
-            // ✅ Notificación roja al eliminar
+            // MENSAJE EXACTO SOLICITADO (Estilo Rojo)
             $this->dispatch('toast', [
-                'message' => "Vehículo {$marca} {$modelo} eliminado",
+                'message' => 'Vehículo Eliminado',
                 'type' => 'error'
             ]);
             
@@ -172,14 +186,11 @@ class VehiculosIndex extends Component
         }
     }
     
-    // Cambiar filtro de estado (SIN NOTIFICACIÓN)
     public function setFiltro($filtro)
     {
         $this->filtroEstado = $filtro;
-        // ❌ NO mostrar notificación al filtrar
     }
     
-    // Resetear formulario
     private function resetForm()
     {
         $this->vehiculoId = null;
@@ -191,10 +202,18 @@ class VehiculosIndex extends Component
         $this->resetErrorBag();
     }
     
-    // Render del componente
     public function render()
     {
-        // Obtener vehículos con filtro
+
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+
         $query = vehiculo::orderBy('created_at', 'desc');
         
         if ($this->filtroEstado !== 'todos') {
@@ -203,7 +222,6 @@ class VehiculosIndex extends Component
         
         $vehiculos = $query->get();
         
-        // Estadísticas
         $stats = [
             'total' => vehiculo::count(),
             'disponibles' => vehiculo::where('estado', vehiculo::ESTADO_DISPONIBLE)->count(),

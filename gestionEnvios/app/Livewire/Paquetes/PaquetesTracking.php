@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Paquete;
 use App\Models\clientes;
 use App\Models\historial_envio;
+use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 
 class PaquetesTracking extends Component
@@ -47,6 +48,14 @@ class PaquetesTracking extends Component
 
     public function render()
     {
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
         $query = Paquete::with(['destinatario', 'remitente', 'historiales'])
             ->when($this->estadoFiltro != 'todos', function ($q) {
                 $q->where('estadoActual', $this->estadoFiltro);

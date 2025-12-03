@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\clientes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClientesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+        
         $clientes = clientes::all();
 
         $titulo = "clientes";
@@ -27,9 +35,7 @@ class ClientesController extends Controller
         return view('clientes.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function create(Request $request)
     {
         $cliente = new clientes();
@@ -98,7 +104,7 @@ class ClientesController extends Controller
     {
         $cliente = clientes::findOrFail($id);
         $cliente->delete();
-        
+
         return redirect()->route('clientes.index');
     }
 }
