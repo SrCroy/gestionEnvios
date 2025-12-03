@@ -195,7 +195,7 @@
                     <h5 class="modal-title">
                         Registrar Nuevo Vehículo
                     </h5>
-                    <button type="button" class="btn-close" wire:click="$dispatch('closeModal')"></button>
+                    <button type="button" class="btn-close" wire:click="$dispatch('closeModal', 'createModal')"></button>
                 </div>
                 <div class="modal-body">
                     <form wire:submit.prevent="store">
