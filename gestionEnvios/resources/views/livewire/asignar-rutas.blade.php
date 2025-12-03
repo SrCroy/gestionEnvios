@@ -9,13 +9,12 @@
     </div>
     
     <div class="card-body">
-        <!-- Fecha y Tipo de Acción -->
         <div class="row mb-4">
             <div class="col-md-4">
                 <label class="form-label fw-bold">
                     <i class="fas fa-calendar-day me-1"></i>Fecha de Trabajo
                 </label>
-                <select class="form-select" wire:model="fechaSeleccionada" wire:change="actualizarFecha($event.target.value)">
+                <select class="form-select" wire:model.live="fechaSeleccionada">
                     @foreach($fechasConAsignaciones as $fecha)
                         <option value="{{ $fecha }}">
                             {{ \Carbon\Carbon::parse($fecha)->format('d/m/Y') }}
@@ -48,7 +47,8 @@
             </div>
         </div>
 
-        <!-- Motoristas Programados para esta Fecha -->
+        ---
+
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card border-primary">
@@ -56,16 +56,16 @@
                         <h5 class="mb-0">
                             <i class="fas fa-users me-2"></i>
                             Motoristas Programados para el {{ \Carbon\Carbon::parse($fechaSeleccionada)->format('d/m/Y') }}
-                            <span class="badge bg-primary ms-2">{{ count($motoristasDelDia) }}</span>
+                            <span class="badge bg-primary ms-2">{{ $motoristasDelDia->count() }}</span>
                         </h5>
                     </div>
                     <div class="card-body">
-                        @if(count($motoristasDelDia) > 0)
+                        @if($motoristasDelDia->count() > 0)
                             <div class="row">
                                 @foreach($motoristasDelDia as $motorista)
                                     <div class="col-md-3 mb-3">
                                         <div class="card h-100 border 
-                                            {{ $motoristaSeleccionado == $motorista->id ? 'border-success border-2' : 'border-secondary' }} 
+                                            {{ $motoristaSeleccionado == $motorista->id ? 'border-success border-2 shadow-lg' : 'border-secondary' }} 
                                             hover-shadow"
                                             style="cursor: pointer;"
                                             wire:click="seleccionarMotorista({{ $motorista->id }})"
@@ -80,15 +80,9 @@
                                                     <i class="fas fa-phone me-1"></i>{{ $motorista->telefono }}
                                                 </small>
                                                 <br>
-                                                @if($motorista->asignaciones_count > 0)
-                                                    <small class="badge bg-success mt-1">
-                                                        {{ $motorista->asignaciones_count }} paquete(s)
-                                                    </small>
-                                                @else
-                                                    <small class="badge bg-warning mt-1">
-                                                        Listo para trabajar
-                                                    </small>
-                                                @endif
+                                                <small class="badge bg-{{ $motorista->asignaciones_count > 0 ? 'success' : 'warning' }} mt-1">
+                                                    {{ $motorista->asignaciones_count }} paquete(s) asignado(s)
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
@@ -104,20 +98,21 @@
                 </div>
             </div>
         </div>
-
+        
         @if($motoristaSeleccionado)
             @php
                 $motoristaData = $motoristasDelDia->firstWhere('id', $motoristaSeleccionado);
             @endphp
             
-            <!-- Información del Motorista Seleccionado -->
+            ---
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border-success">
                         <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
                                 <i class="fas fa-user-tie me-2"></i>
-                                {{ $motoristaData->name }} - {{ \Carbon\Carbon::parse($fechaSeleccionada)->format('d/m/Y') }}
+                                **Motorista Seleccionado:** {{ $motoristaData->name ?? 'N/A' }}
                             </h5>
                             <button type="button" class="btn btn-sm btn-light" wire:click="resetSelecciones">
                                 <i class="fas fa-times me-1"></i>Cambiar Motorista
@@ -126,25 +121,19 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <h6><i class="fas fa-user me-2"></i>Motorista</h6>
-                                    <p class="mb-1"><strong>Nombre:</strong> {{ $motoristaData->name }}</p>
-                                    <p class="mb-0"><strong>Teléfono:</strong> {{ $motoristaData->telefono }}</p>
-                                </div>
-                                
-                                <div class="col-md-4">
                                     <h6><i class="fas fa-truck me-2"></i>Vehículo Asignado</h6>
                                     @if($vehiculoAsignado)
                                         <p class="mb-1">
-                                            <strong>Vehículo:</strong> {{ $vehiculoAsignado->marca }} {{ $vehiculoAsignado->modelo }}
+                                            <strong>Vehículo:</strong> {{ $vehiculoAsignado->marca ?? 'N/A' }} {{ $vehiculoAsignado->modelo ?? '' }}
                                         </p>
                                         <p class="mb-0">
-                                            <strong>Capacidad:</strong> {{ number_format($vehiculoAsignado->pesoMaximo, 2) }} kg
+                                            <strong>Capacidad Max:</strong> {{ number_format($capacidadMaxima, 2) }} kg
                                         </p>
                                     @else
                                         <div class="alert alert-danger mb-0">
                                             <i class="fas fa-exclamation-circle me-2"></i>
-                                            <strong>¡No hay vehículo asignado!</strong>
-                                            <br><small>Este motorista no tiene vehículo asignado para esta fecha.</small>
+                                            **¡No hay vehículo asignado!**
+                                            <br><small>El botón de asignación estará inhabilitado.</small>
                                         </div>
                                     @endif
                                 </div>
@@ -154,11 +143,21 @@
                                     <p class="mb-1">
                                         <strong>Paquetes asignados:</strong> 
                                         <span class="badge bg-info">
-                                            {{ $asignacionesDelMotorista instanceof \Illuminate\Support\Collection ? $asignacionesDelMotorista->whereNotNull('idPaquete')->count() : 0 }}
+                                            {{ $asignacionesDelMotorista->whereNotNull('idPaquete')->count() }}
                                         </span>
                                     </p>
                                     <p class="mb-0">
-                                        <strong>Peso total:</strong> {{ number_format($pesoTotal, 2) }} kg
+                                        <strong>Peso total actual:</strong> {{ number_format($pesoTotal, 2) }} kg
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6><i class="fas fa-box-open me-2"></i>Paquetes a Añadir</h6>
+                                    <p class="mb-1">
+                                        <strong>Paquetes seleccionados:</strong> 
+                                        <span class="badge bg-secondary">{{ count($paquetesSeleccionados) }}</span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Peso a añadir:</strong> {{ number_format($pesoSeleccionado, 2) }} kg
                                     </p>
                                 </div>
                             </div>
@@ -167,12 +166,11 @@
                 </div>
             </div>
 
-            <!-- Barra de Progreso de Capacidad -->
             @if($vehiculoAsignado)
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header bg-light">
                             <h5 class="mb-0">
                                 <i class="fas fa-weight-hanging me-2"></i>
                                 Uso de Capacidad del Vehículo
@@ -181,33 +179,32 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between mb-1">
-                                    <span>Peso: {{ number_format($pesoTotal, 2) }} kg / {{ number_format($capacidadMaxima, 2) }} kg</span>
-                                    <span>{{ $porcentajeUso }}%</span>
+                                    <span>**Peso:** {{ number_format($pesoTotal + $pesoSeleccionado, 2) }} kg / {{ number_format($capacidadMaxima, 2) }} kg</span>
+                                    @php
+                                        $pesoActualizado = $pesoTotal + $pesoSeleccionado;
+                                        $porcentajeActualizado = $capacidadMaxima > 0 ? min(100, round(($pesoActualizado / $capacidadMaxima) * 100, 2)) : 0;
+                                    @endphp
+                                    <span>**{{ $porcentajeActualizado }}%**</span>
                                 </div>
                                 <div class="progress" style="height: 25px;">
                                     <div class="progress-bar 
-                                        @if($porcentajeUso >= 90) bg-danger
-                                        @elseif($porcentajeUso >= 70) bg-warning
+                                        @if($porcentajeActualizado >= 100) bg-danger
+                                        @elseif($porcentajeActualizado >= 80) bg-warning
                                         @else bg-success @endif"
                                         role="progressbar" 
-                                        style="width: {{ $porcentajeUso }}%"
-                                        aria-valuenow="{{ $porcentajeUso }}" 
+                                        style="width: {{ $porcentajeActualizado }}%"
+                                        aria-valuenow="{{ $porcentajeActualizado }}" 
                                         aria-valuemin="0" 
                                         aria-valuemax="100">
-                                        {{ $porcentajeUso }}%
+                                        {{ $porcentajeActualizado }}%
                                     </div>
                                 </div>
                             </div>
                             
-                            @if($porcentajeUso >= 100)
+                            @if($pesoActualizado > $capacidadMaxima && $capacidadMaxima > 0)
                                 <div class="alert alert-danger">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
-                                    <strong>¡Capacidad máxima alcanzada!</strong> No se pueden agregar más paquetes.
-                                </div>
-                            @elseif($porcentajeUso >= 90)
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-circle me-2"></i>
-                                    <strong>¡Cuidado!</strong> Capacidad casi completa.
+                                    **¡Capacidad máxima excedida!** Exceso de **{{ number_format($pesoActualizado - $capacidadMaxima, 2) }} kg**. Deselecciona paquetes.
                                 </div>
                             @endif
                         </div>
@@ -216,31 +213,32 @@
             </div>
             @endif
 
-            <!-- Paquetes Disponibles para Asignar -->
+            ---
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-info bg-opacity-10">
                             <h5 class="mb-0">
                                 <i class="fas fa-boxes me-2"></i>
-                                Paquetes para {{ $tipoAccion === 'recoger' ? 'RECOGER' : 'ENTREGAR' }}
+                                Paquetes Disponibles para **{{ $tipoAccion === 'recoger' ? 'RECOGER' : 'ENTREGAR' }}**
                             </h5>
-                            <span class="badge bg-primary">
-                                {{ count($paquetesDisponibles) }} disponibles
+                            <span class="badge bg-info">
+                                {{ $paquetesDisponibles->count() }} disponibles
                             </span>
                         </div>
                         <div class="card-body">
-                            @if(count($paquetesDisponibles) > 0)
+                            @if($paquetesDisponibles->count() > 0)
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-sm table-hover">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>Seleccionar</th>
-                                                <th>Descripción</th>
-                                                <th>Peso (kg)</th>
-                                                <th>Destinatario</th>
-                                                <th>Dirección</th>
-                                                <th>Estado</th>
+                                                <th width="5%">Sel.</th>
+                                                <th width="25%">Descripción</th>
+                                                <th width="10%">Peso (kg)</th>
+                                                <th width="20%">Destinatario</th>
+                                                <th width="30%">Dirección</th>
+                                                <th width="10%">Estado</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -252,7 +250,7 @@
                                                                 class="form-check-input" 
                                                                 type="checkbox" 
                                                                 value="{{ $paquete->id }}"
-                                                                wire:model="paquetesSeleccionados"
+                                                                wire:model.live="paquetesSeleccionados"
                                                             >
                                                         </div>
                                                     </td>
@@ -275,10 +273,9 @@
                                     </table>
                                 </div>
 
-                                <!-- Botón Asignar -->
                                 <div class="text-center mt-3">
                                     @php
-                                        $disabled = empty($paquetesSeleccionados) || !$vehiculoAsignado || ($pesoSeleccionado + $pesoTotal > $capacidadMaxima);
+                                        $disabled = empty($paquetesSeleccionados) || !$vehiculoAsignado || ($pesoSeleccionado + $pesoTotal > $capacidadMaxima && $capacidadMaxima > 0);
                                     @endphp
                                     
                                     <button 
@@ -303,13 +300,13 @@
                                         @if(!$vehiculoAsignado)
                                             <p class="text-danger">
                                                 <i class="fas fa-exclamation-triangle me-1"></i>
-                                                <strong>No se puede asignar:</strong> Este motorista no tiene vehículo asignado
+                                                **No se puede asignar:** Este motorista no tiene vehículo asignado
                                             </p>
                                         @endif
-                                        @if($vehiculoAsignado && ($pesoSeleccionado + $pesoTotal > $capacidadMaxima))
+                                        @if($vehiculoAsignado && $capacidadMaxima > 0 && ($pesoSeleccionado + $pesoTotal > $capacidadMaxima))
                                             <p class="text-danger">
                                                 <i class="fas fa-exclamation-triangle me-1"></i>
-                                                Capacidad excedida en {{ number_format($pesoSeleccionado + $pesoTotal - $capacidadMaxima, 2) }} kg
+                                                Capacidad excedida en **{{ number_format($pesoSeleccionado + $pesoTotal - $capacidadMaxima, 2) }} kg**
                                             </p>
                                         @endif
                                     </div>
@@ -317,9 +314,7 @@
                             @else
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    No hay paquetes disponibles para {{ $tipoAccion === 'recoger' ? 'recoger' : 'entregar' }}.
-                                    <br>
-                                    <small>Todos los paquetes en estado <strong>{{ $tipoAccion === 'recoger' ? 'Recoger' : 'Entregar' }}</strong> ya están asignados o tienen vehículo.</small>
+                                    No hay paquetes disponibles para **{{ $tipoAccion === 'recoger' ? 'recoger' : 'entregar' }}**.
                                 </div>
                             @endif
                         </div>
@@ -327,32 +322,30 @@
                 </div>
             </div>
 
-            <!-- Paquetes Ya Asignados a este Motorista -->
+            ---
+
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-success bg-opacity-10">
                             <h5 class="mb-0">
                                 <i class="fas fa-list-check me-2"></i>
-                                Paquetes Asignados el {{ \Carbon\Carbon::parse($fechaSeleccionada)->format('d/m/Y') }}
+                                Paquetes Ya Asignados al Motorista
                             </h5>
-                            <span class="badge bg-success">
-                                {{ $asignacionesDelMotorista instanceof \Illuminate\Support\Collection ? $asignacionesDelMotorista->whereNotNull('idPaquete')->count() : 0 }}
-                            </span>
                         </div>
                         <div class="card-body">
-                            @if($asignacionesDelMotorista instanceof \Illuminate\Support\Collection && $asignacionesDelMotorista->whereNotNull('idPaquete')->count() > 0)
+                            @if($asignacionesDelMotorista->whereNotNull('idPaquete')->count() > 0)
                                 <div class="table-responsive">
-                                    <table class="table table-hover">
+                                    <table class="table table-sm table-hover">
                                         <thead class="table-success">
                                             <tr>
-                                                <th>#</th>
-                                                <th>Paquete</th>
-                                                <th>Peso</th>
-                                                <th>Destinatario</th>
-                                                <th>Dirección</th>
-                                                <th>Estado</th>
-                                                <th>Acción</th>
+                                                <th width="5%">#</th>
+                                                <th width="20%">Paquete</th>
+                                                <th width="10%">Peso</th>
+                                                <th width="20%">Destinatario</th>
+                                                <th width="30%">Dirección</th>
+                                                <th width="10%">Estado</th>
+                                                <th width="5%">Acción</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -375,7 +368,7 @@
                                                         <small>{{ $asignacion->paquete->destinatario->direccion ?? '' }}</small>
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-{{ $asignacion->paquete->estadoActual === 'En camino' ? 'warning' : 'primary' }}">
+                                                        <span class="badge bg-{{ $asignacion->paquete->estadoActual === 'En camino' ? 'success' : 'primary' }}">
                                                             {{ $asignacion->paquete->estadoActual ?? 'N/A' }}
                                                         </span>
                                                     </td>
@@ -386,12 +379,11 @@
                                                             wire:click="quitarPaquete({{ $asignacion->id }})"
                                                             onclick="return confirm('¿Quitar este paquete del motorista?')"
                                                         >
-                                                            <i class="fas fa-trash me-1"></i>Quitar
+                                                            <i class="fas fa-trash"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
                                             @endforeach
-                                            <!-- Total -->
                                             <tr class="table-active">
                                                 <td colspan="2" class="text-end"><strong>TOTAL:</strong></td>
                                                 <td>
