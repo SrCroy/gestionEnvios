@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MotoristasController;
 use App\Http\Controllers\VehiculoController;
+use App\Livewire\Clientes\EditarPerfil;
 use App\Livewire\Clientes\LoginClientes;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\loginController;
@@ -74,6 +75,9 @@ Route::middleware('auth:cliente')->group(function () {
     Route::get('/cliente/paquetes', function () {
         return view('clientes.paquete');
     })->name('clientes.paquete');
+
+    Route::view('/cliente/perfil', 'clientes.perfil')->name('cliente.perfil');
+
 });
 
 // routes/web.php

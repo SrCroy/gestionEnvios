@@ -7,17 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class ClienteAuthController extends Controller
 {
-    /**
-     * Mostrar formulario de login (Livewire)
-     */
+    
     public function showLoginForm()
     {
-        return view('livewire.clientes.login-clientes');
+        return view('livewire.clientes.login-clientes'); 
     }
 
-    /**
-     * Procesar login
-     */
+    
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -30,7 +26,6 @@ class ClienteAuthController extends Controller
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',
         ]);
 
-        // Intentar autenticar
         if (Auth::guard('cliente')->attempt(
             $request->only('email', 'password'),
             $request->has('remember')
@@ -42,15 +37,15 @@ class ClienteAuthController extends Controller
                 ->with('success', '¡Bienvenido!');
         }
 
-        // Error de autenticación
+       
         return back()
-            ->withInput($request->only('email'))
-            ->with('error', 'Las credenciales no son válidas.');
+        ->withInput($request->only('email')) 
+        ->withErrors([
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
+        ]);
     }
 
-    /**
-     * Logout
-     */
+    
     public function logout(Request $request)
     {
         Auth::guard('cliente')->logout(); 

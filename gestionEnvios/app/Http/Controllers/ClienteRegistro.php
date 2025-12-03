@@ -40,7 +40,7 @@ class ClienteRegistro extends Controller
         ]);
 
 
-        // Geocode a partir de la dirección
+       
         $apiKey = env('GOOGLE_MAPS_KEY');
 
         $direccionEncoded = urlencode($request->direccion);
@@ -54,13 +54,10 @@ class ClienteRegistro extends Controller
 
         $location = $response['results'][0]['geometry']['location'];
 
-        // Validación: solo El Salvador
+     
         $pais = collect($response['results'][0]['address_components'])
             ->firstWhere('types', ['country'])['long_name'] ?? null;
 
-
-
-        // Crear cliente
         $cliente = clientes::create([
             'nombre' => $request->nombre,
             'email' => $request->email,

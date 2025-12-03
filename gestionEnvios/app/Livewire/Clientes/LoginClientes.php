@@ -14,9 +14,9 @@ class LoginClientes extends Component
 
     public function login()
     {
-        $this->errors = []; // limpiar errores previos
+        $this->errors = []; 
 
-        // Validación manual (igual que el login original)
+       
         if (empty($this->email)) {
             $this->errors['email'] = 'El email es requerido';
         } elseif (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
@@ -29,12 +29,12 @@ class LoginClientes extends Component
             $this->errors['password'] = 'La contraseña debe tener al menos 6 caracteres';
         }
 
-        // Si hay errores → detener
+        
         if (!empty($this->errors)) {
             return;
         }
 
-        // Intento de autenticación
+        
         if (Auth::guard('cliente')->attempt(
             ['email' => $this->email, 'password' => $this->password],
             $this->remember
@@ -43,7 +43,7 @@ class LoginClientes extends Component
             return redirect()->route('cliente.dashboard');
         }
 
-        // Error de login
+       
         $this->errors['email'] = 'Credenciales incorrectas.';
     }
 

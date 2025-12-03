@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,6 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
+        
+        $middleware->redirectGuestsTo(function (Request $request) {
+            
+        
+            if ($request->is('cliente/*')) {
+                return route('cliente.login'); 
+            }
+
+            
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
