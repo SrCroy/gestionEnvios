@@ -106,5 +106,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Nota: ajusta nombres de columnas si tu esquema usa otros (ej. motorista_id vs id_motorista, vehiculo_id vs id_vehiculo).
+
+        $this->call(PaquetesSeeder::class);
     }
 }

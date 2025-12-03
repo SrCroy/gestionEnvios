@@ -3,6 +3,7 @@
 namespace App\Livewire\Vehiculos;
 
 use App\Models\vehiculo;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class VehiculosIndex extends Component
@@ -29,6 +30,7 @@ class VehiculosIndex extends Component
             'modelo' => 'required|string|max:100',
             'pesoMaximo' => 'required|numeric|min:0|max:99999999.99',
             'volumenMaximo' => 'required|numeric|min:0|max:99999999.99',
+            // CAMBIO: 'required' evita que se guarde "-- Seleccione --" (valor vacío)
             'estado' => 'required|in:' . implode(',', vehiculo::getEstados())
         ];
     }
@@ -56,6 +58,7 @@ class VehiculosIndex extends Component
     
     public function store()
     {
+        // Validamos (el estado no se valida aquí porque se asigna automático)
         $this->validate([
             'marca' => 'required|string|max:100',
             'modelo' => 'required|string|max:100',
@@ -74,6 +77,7 @@ class VehiculosIndex extends Component
         $this->dispatch('closeModal', 'createModal');
         $this->resetForm();
         
+        // MENSAJE EXACTO SOLICITADO
         $this->dispatch('toast', [
             'message' => 'Vehículo agregado', 
             'type' => 'success'
@@ -96,7 +100,7 @@ class VehiculosIndex extends Component
     
     public function update()
     {
-        $this->validate()
+        $this->validate(); // Aquí sí valida que el estado sea required
         
         $vehiculo = vehiculo::findOrFail($this->vehiculoId);
         $estadoActual = $vehiculo->estado;
@@ -104,7 +108,7 @@ class VehiculosIndex extends Component
 
         // --- INICIO DE VALIDACIONES DE ESTADO ---
 
-        // Validar transición desde "En Ruta"
+        // 1. Validar transición desde "En Ruta"
         // Un vehículo En Ruta solo puede pasar a Disponible o Mantenimiento
         if ($estadoActual === vehiculo::ESTADO_EN_RUTA) {
             if ($nuevoEstado !== vehiculo::ESTADO_DISPONIBLE && $nuevoEstado !== vehiculo::ESTADO_MANTENIMIENTO && $nuevoEstado !== vehiculo::ESTADO_EN_RUTA) {
@@ -113,14 +117,14 @@ class VehiculosIndex extends Component
             }
         }
 
-        // Validar transición desde "Mantenimiento" hacia "En Ruta"
+        // 2. Validar transición desde "Mantenimiento" hacia "En Ruta"
         // Un vehículo en Mantenimiento NO puede pasar a En Ruta
         if ($estadoActual === vehiculo::ESTADO_MANTENIMIENTO && $nuevoEstado === vehiculo::ESTADO_EN_RUTA) {
             $this->addError('estado', 'Un vehículo en "Mantenimiento" no puede pasar directamente a "En Ruta".');
             return;
         }
 
-        // Validar transición desde "Fuera de Servicio" hacia "En Ruta"
+        // 3. Validar transición desde "Fuera de Servicio" hacia "En Ruta"
         // Un vehículo Fuera de Servicio NO puede pasar a En Ruta
         if ($estadoActual === vehiculo::ESTADO_FUERA_SERVICIO && $nuevoEstado === vehiculo::ESTADO_EN_RUTA) {
             $this->addError('estado', 'Un vehículo "Fuera de Servicio" no puede pasar a "En Ruta".');
@@ -140,6 +144,7 @@ class VehiculosIndex extends Component
         $this->dispatch('closeModal', 'editModal');
         $this->resetForm();
         
+        // MENSAJE EXACTO SOLICITADO
         $this->dispatch('toast', [
             'message' => 'Vehículo Actualizado',
             'type' => 'success'
@@ -167,6 +172,7 @@ class VehiculosIndex extends Component
             $this->vehiculoToDelete->delete();
             $this->dispatch('closeModal', 'deleteModal');
             
+            // MENSAJE EXACTO SOLICITADO (Estilo Rojo)
             $this->dispatch('toast', [
                 'message' => 'Vehículo Eliminado',
                 'type' => 'error'
@@ -198,6 +204,16 @@ class VehiculosIndex extends Component
     
     public function render()
     {
+
+         if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+
+        if (Auth::user()->rol !== 'Administrador') {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+
         $query = vehiculo::orderBy('created_at', 'desc');
         
         if ($this->filtroEstado !== 'todos') {

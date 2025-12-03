@@ -166,21 +166,14 @@
 
             <div class="mt-4 px-3 text-uppercase text-white-50" style="font-size: 0.75rem; font-weight: bold;">Cuenta</div>
             
-            <a class="nav-link" href="#">
-                <i class="bi bi-person-circle"></i> Mi Perfil
+            <a class="nav-link" href="{{ route('cliente.perfil' )}}">
+                <i class="bi bi-person-circle"></i> Editar Perfil
             </a>
             
-            <a class="nav-link" href="#">
-                <i class="bi bi-question-circle-fill"></i> Ayuda y Soporte
-            </a>
+          
         </nav>
 
-        <div class="p-3 mt-auto border-top border-light border-opacity-10 text-center">
-            <small class="text-white-50 d-block mb-1">¿Necesitas ayuda?</small>
-            <a href="tel:+50326661234" class="text-warning text-decoration-none fw-bold">
-                <i class="bi bi-telephone-fill me-1"></i> 2666-1234
-            </a>
-        </div>
+       
     </div>
 
     <!-- CONTENIDO -->
@@ -210,10 +203,10 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Editar Perfil</a></li>
+                            <li><a class="dropdown-item" href="{{ route('cliente.perfil') }}"><i class="bi bi-person me-2"></i>Editar Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form action="{{ route('logout') }}" method="POST">
+                                <form action="{{ route('cliente.logout') }}" method="POST">
                                     @csrf
                                     <button class="dropdown-item text-danger">
                                         <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
@@ -242,7 +235,7 @@
     <script src="{{ asset('vendor/livewire/livewire.js') }}" data-navigate-once></script>
 
     <script>
-        // Configuración Livewire
+        // 1. Configuración Livewire
         window.livewireScriptConfig = {
             uri: '/gestionEnvios/gestionEnvios/public/livewire/update',
             csrf: '{{ csrf_token() }}',
@@ -251,19 +244,47 @@
             nonce: ''
         };
 
-        // Listeners Globales para Modals y Toasts
+        // 2. Función Helper para Toasts (Global)
+        // La definimos fuera para poder usarla en cualquier parte si hace falta
+        function showToast(message, type = 'success') {
+            const colors = {
+                success: "linear-gradient(to right, #00b09b, #96c93d)",
+                error: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                info: "linear-gradient(to right, #4facfe, #00f2fe)"
+            };
+
+            Toastify({
+                text: message,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                style: { background: colors[type] || colors['success'] },
+                stopOnFocus: true,
+            }).showToast();
+        }
+
+        // 3. Lógica del DOM (Sidebar, etc)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar Toggle
+            const toggle = document.getElementById('sidebarToggle');
+            if(toggle) {
+                toggle.addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.toggle('show');
+                });
+            }
+        });
+
+        // 4. Listeners de Livewire
         document.addEventListener('livewire:init', () => {
             
             // ABRIR MODAL
             Livewire.on('openModal', (data) => {
                 let modalId = data; 
                 
-                // Si viene como objeto { modalId: 'editModal' }
                 if (typeof data === 'object' && data !== null && 'modalId' in data) {
                     modalId = data.modalId;
-                }
-                // Si viene como array ['editModal']
-                else if (Array.isArray(data)) {
+                } else if (Array.isArray(data)) {
                     modalId = data[0];
                 }
 
@@ -287,7 +308,7 @@
                     const modal = bootstrap.Modal.getInstance(el);
                     if(modal) modal.hide();
                     
-                    // Limpieza de fondos oscuros que se quedan pegados
+                    // Limpieza de fondos oscuros
                     const backdrops = document.querySelectorAll('.modal-backdrop');
                     backdrops.forEach(backdrop => backdrop.remove());
                     document.body.classList.remove('modal-open');
@@ -296,27 +317,12 @@
                 }
             });
 
-            // TOASTS
+            // TOASTS (Usando la función helper de arriba)
             Livewire.on('toast', (data) => {
-                // Manejo robusto de datos del toast
                 let msg = data.message || (Array.isArray(data) ? data[0].message : 'Acción completada');
                 let type = data.type || (Array.isArray(data) ? data[0].type : 'success');
                 
-                const colors = {
-                    success: "linear-gradient(to right, #00b09b, #96c93d)",
-                    error: "linear-gradient(to right, #ff5f6d, #ffc371)",
-                    info: "linear-gradient(to right, #4facfe, #00f2fe)"
-                };
-
-                Toastify({
-                    text: msg,
-                    duration: 3000,
-                    close: true,
-                    gravity: "top",
-                    position: "right",
-                    style: { background: colors[type] || colors['success'] },
-                    stopOnFocus: true,
-                }).showToast();
+                showToast(msg, type);
             });
         });
     </script>
