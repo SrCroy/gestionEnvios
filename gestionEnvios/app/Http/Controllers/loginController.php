@@ -5,24 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 
 class loginController extends Controller
 {
-    /**
-     * Mostrar formulario de login (Livewire)
-     */
+   
     public function showLoginForm()
     {
         return view('livewire.auth.login');
     }
 
-    /**
-     * Procesar login
-     */
+    
     public function login(Request $request)
     {
-        // Validar datos
+      
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
@@ -33,26 +28,44 @@ class loginController extends Controller
             'password.min' => 'La contraseña debe tener al menos 6 caracteres',
         ]);
 
-        // Intentar autenticar
+       
         if (Auth::attempt($credentials, $request->has('remember'))) {
+            
             $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'))->with('success', '¡Bienvenido al panel!');
+            
+            
+            $usuario = Auth::user(); 
+
+          
+            if ($usuario->rol === 'motorista' || $usuario->rol === 'Motorista') {
+             return redirect()->route('asignaciones.index')
+            ->with('success', 'Bienvenido, Motorista.');
+            }
+
+            
+            if ($usuario->rol === 'admin' || $usuario->rol === 'Administrador') {
+               return redirect()->route('dashboard.home')
+            ->with('success', 'Bienvenido al panel de Administración.');
+            }
+
+           
+            Auth::logout();
+            return back()->with('error', 'Tu usuario no tiene un rol autorizado para ingresar.');
         }
 
-        // Error de autenticación
         return back()
             ->withInput($request->only('email'))
             ->with('error', 'Las credenciales no son válidas.');
     }
 
-    /**
-     * Logout
-     */
+  
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login')->with('success', 'Sesión cerrada correctamente.');
+        
+        return redirect()->route('login') 
+            ->with('success', 'Sesión cerrada correctamente.');
     }
 }

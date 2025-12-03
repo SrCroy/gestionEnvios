@@ -77,6 +77,7 @@ Route::middleware('auth:cliente')->group(function () {
     })->name('clientes.paquete');
 
     Route::view('/cliente/perfil', 'clientes.perfil')->name('cliente.perfil');
+    Route::post('/cliente/logout', [ClienteAuthController::class, 'logout'])->name('cliente.logout');
 
 });
 

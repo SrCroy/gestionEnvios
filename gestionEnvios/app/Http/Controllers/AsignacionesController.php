@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Asignacion; // cambiado
+use App\Models\Asignacion;
 use App\Models\User;
 use App\Models\vehiculo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // <--- IMPORTANTE: Agregar esto
 
 class AsignacionesController extends Controller
 {
     public function index()
     {
+        // Opcional: Si quieres que el motorista solo vea sus propios compañeros o solo admins
         $motoristas = User::where('rol', 'motorista')->get();
         $vehiculos = vehiculo::all();
 
@@ -18,73 +20,65 @@ class AsignacionesController extends Controller
     }
 
     public function events(Request $request)
-    {
-        $start = $request->input('start');
-        $end = $request->input('end');
-        $motorista = $request->input('motorista');
-        $vehiculo = $request->input('vehiculo');
+{
+    $start = $request->input('start');
+    $end = $request->input('end');
+    
+    // Filtros que vienen del navegador (opcionales)
+    $motoristaIdInput = $request->input('motorista');
+    $vehiculoIdInput = $request->input('vehiculo');
 
-        $query = Asignacion::with(['motorista', 'vehiculo']) // cambiado
-            ->whereDate('fechaAsignacion', '>=', $start)
-            ->whereDate('fechaAsignacion', '<=', $end);
+    // 1. Iniciar la consulta básica por fecha
+    $query = Asignacion::with(['motorista', 'vehiculo'])
+        ->whereDate('fechaAsignacion', '>=', $start)
+        ->whereDate('fechaAsignacion', '<=', $end);
 
-        if ($motorista) {
-            $query->where('idMotorista', $motorista);
+    // -----------------------------------------------------------
+    // 2. FILTRO DE SEGURIDAD POR ROL (AQUÍ ESTÁ LA CLAVE)
+    // -----------------------------------------------------------
+    $usuarioLogueado = Auth::user();
+
+    if ($usuarioLogueado->rol === 'Motorista') {
+        // SI ES MOTORISTA: Forzamos a que solo traiga SUS registros.
+        // Ignoramos cualquier otro filtro de motorista que venga del request.
+        $query->where('idMotorista', $usuarioLogueado->id);
+    } 
+    else {
+        // SI ES ADMIN: Permitimos filtrar por el motorista que quiera ver
+        if ($motoristaIdInput) {
+            $query->where('idMotorista', $motoristaIdInput);
         }
-
-        if ($vehiculo) {
-            $query->where('idVehiculo', $vehiculo);
-        }
-
-        $asignaciones = $query->get()->map(function ($asignacion) {
-
-            $motorista = $asignacion->motorista->name ?? 'Sin motorista';
-            $vehiculo  = $asignacion->vehiculo->modelo ?? 'Sin vehículo'; // <- usar nombre/modelo
-
-            $estado = 'sin_asignar';
-            $color = '#dc3545';
-
-            if ($asignacion->idMotorista && $asignacion->idVehiculo) {
-                $estado = 'completo';
-                $color = '#28a745';
-            } elseif ($asignacion->idMotorista || $asignacion->idVehiculo) {
-                $estado = 'parcial';
-                $color = '#ffc107';
-            }
-
-            $title = "{$motorista} - {$vehiculo}";
-
-            return [
-                'id' => $asignacion->id,
-                'title' => $title,
-                'start' => $asignacion->fechaAsignacion->format('Y-m-d'),
-                'color' => $color,
-                'allDay' => true,
-                'extendedProps' => [
-                    'idMotorista' => $asignacion->idMotorista,
-                    'idVehiculo' => $asignacion->idVehiculo,
-                    'motorista' => $motorista,
-                    'vehiculo' => $vehiculo, // <- enviar modelo/nombre
-                    'estado' => $estado,
-                    'fecha' => $asignacion->fechaAsignacion->format('d/m/Y'),
-                    'fecha_completa' => $asignacion->fechaAsignacion->format('Y-m-d'),
-                ]
-            ];
-        });
-
-        return response()->json($asignaciones);
     }
+    // -----------------------------------------------------------
+
+    // Filtro por vehículo (aplica para ambos roles si se selecciona)
+    if ($vehiculoIdInput) {
+        $query->where('idVehiculo', $vehiculoIdInput);
+    }
+
+    // Ejecutar consulta y formatear para FullCalendar
+    $asignaciones = $query->get()->map(function ($asignacion) {
+        return $this->formatEvent($asignacion);
+    });
+
+    return response()->json($asignaciones);
+}
 
     public function store(Request $request)
     {
+        // --- SEGURIDAD: SOLO ADMIN PUEDE CREAR ---
+        if (Auth::user()->rol !== 'admin') {
+            return response()->json(['error' => 'No tienes permiso para crear asignaciones.'], 403);
+        }
+
         $validated = $request->validate([
-            'fecha' => 'required|date|after:yesterday',
+            'fecha' => 'required|date', // quite after:yesterday para pruebas, ponlo si lo necesitas
             'idMotorista' => 'nullable|exists:users,id',
             'idVehiculo' => 'nullable|exists:vehiculos,id',
             'notas' => 'nullable|string|max:500'
         ]);
 
-        // Validación: el mismo vehículo no puede repetirse en la misma fecha
+        // Validación de vehículo ocupado
         if ($validated['idVehiculo']) {
             $vehiculoOcupado = Asignacion::where('idVehiculo', $validated['idVehiculo'])
                 ->whereDate('fechaAsignacion', $validated['fecha'])
@@ -95,7 +89,6 @@ class AsignacionesController extends Controller
             }
         }
 
-        // Permitir múltiples motoristas por día: crear siempre un nuevo registro
         $asignacion = Asignacion::create([
             'fechaAsignacion' => $validated['fecha'],
             'idMotorista' => $validated['idMotorista'] ?? null,
@@ -103,7 +96,6 @@ class AsignacionesController extends Controller
             'notas' => $validated['notas'] ?? null,
         ]);
 
-        // Asegurar relaciones cargadas para título correcto
         $asignacion->load(['motorista','vehiculo']);
 
         return response()->json([
@@ -115,6 +107,11 @@ class AsignacionesController extends Controller
 
     public function update(Request $request, $id)
     {
+        // --- SEGURIDAD: SOLO ADMIN PUEDE EDITAR ---
+        if (Auth::user()->rol !== 'admin') {
+            return response()->json(['error' => 'No tienes permiso para editar asignaciones.'], 403);
+        }
+
         $asignacion = Asignacion::findOrFail($id);
 
         $validated = $request->validate([
@@ -123,8 +120,6 @@ class AsignacionesController extends Controller
             'notas' => 'nullable|string|max:500'
         ]);
 
-        // Permitir cambiar motorista sin restricción por fecha (múltiples motoristas en el mismo día)
-        // Mantener vehículo único por fecha
         if (
             isset($validated['idVehiculo']) &&
             $validated['idVehiculo'] != $asignacion->idVehiculo
@@ -140,7 +135,7 @@ class AsignacionesController extends Controller
         }
 
         $asignacion->update($validated);
-        $asignacion->load(['motorista','vehiculo']); // cargar relaciones
+        $asignacion->load(['motorista','vehiculo']);
 
         return response()->json([
             'success' => true,
@@ -151,6 +146,11 @@ class AsignacionesController extends Controller
 
     public function destroy($id)
     {
+        // --- SEGURIDAD: SOLO ADMIN PUEDE ELIMINAR ---
+        if (Auth::user()->rol !== 'admin') {
+            return response()->json(['error' => 'No tienes permiso para eliminar asignaciones.'], 403);
+        }
+
         $asignacion = Asignacion::findOrFail($id);
         $asignacion->delete();
 
@@ -160,10 +160,11 @@ class AsignacionesController extends Controller
         ]);
     }
 
+    // Tu función privada auxiliar (la reutilicé en events para limpiar)
     private function formatEvent($asignacion)
     {
         $motorista = $asignacion->motorista->name ?? 'Sin motorista';
-        $vehiculo = $asignacion->vehiculo->modelo ?? 'Sin vehículo'; // <- usar nombre/modelo
+        $vehiculo = $asignacion->vehiculo->modelo ?? 'Sin vehículo';
 
         $estado = 'sin_asignar';
         $color = '#dc3545';
@@ -186,7 +187,18 @@ class AsignacionesController extends Controller
             'title' => $title,
             'start' => $asignacion->fechaAsignacion->format('Y-m-d'),
             'color' => $color,
-            'allDay' => true
+            'allDay' => true,
+            // Agregué los extendedProps que tenías para que el frontend funcione igual
+            'extendedProps' => [
+                'idMotorista' => $asignacion->idMotorista,
+                'idVehiculo' => $asignacion->idVehiculo,
+                'motorista' => $motorista,
+                'vehiculo' => $vehiculo,
+                'estado' => $estado,
+                'fecha' => $asignacion->fechaAsignacion->format('d/m/Y'),
+                'fecha_completa' => $asignacion->fechaAsignacion->format('Y-m-d'),
+                'notas' => $asignacion->notas // Asegúrate de enviar notas si las usas
+            ]
         ];
     }
 }

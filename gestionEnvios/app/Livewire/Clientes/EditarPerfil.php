@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Clientes;
 
+use Illuminate\Http\Request;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash; 
@@ -73,6 +74,15 @@ class EditarPerfil extends Component
 
         session()->flash('success', 'Perfil actualizado correctamente.');
     }
+    public function logout(Request $request)
+{
+    Auth::guard('cliente')->logout(); 
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('cliente.login'); 
+}
 
     public function render()
     {

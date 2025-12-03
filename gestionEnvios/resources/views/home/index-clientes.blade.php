@@ -166,8 +166,8 @@
 
             <div class="mt-4 px-3 text-uppercase text-white-50" style="font-size: 0.75rem; font-weight: bold;">Cuenta</div>
             
-            <a class="nav-link" href="#">
-                <i class="bi bi-person-circle"></i> Mi Perfil
+            <a class="nav-link" href="{{ route('cliente.perfil' )}}">
+                <i class="bi bi-person-circle"></i> Editar Perfil
             </a>
             
             <a class="nav-link" href="#">
@@ -210,10 +210,10 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                             <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Editar Perfil</a></li>
+                            <li><a class="dropdown-item" href="{{ route('cliente.perfil') }}"><i class="bi bi-person me-2"></i>Editar Perfil</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <form action="{{ route('logout') }}" method="POST">
+                                <form action="{{ route('cliente.logout') }}" method="POST">
                                     @csrf
                                     <button class="dropdown-item text-danger">
                                         <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
