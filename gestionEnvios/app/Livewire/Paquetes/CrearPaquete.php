@@ -181,7 +181,7 @@ class CrearPaquete extends Component
             'altura' => $this->altura,
             'fechaRegistro' => now(),
             'fechaEstimadaEntrega' => now()->addDays(2),
-            'estadoActual' => 'Pendiente'
+            'estadoActual' => 'Recoger'
         ]);
 
         $this->dispatch('closeModal', 'crearPaqueteModal');

@@ -160,9 +160,6 @@
             <a class="nav-link {{ request()->routeIs('asignaciones.*') ? 'active' : '' }}" href="{{ route('asignaciones.index') }}">
                 <i class="bi bi-calendar"></i>Asignaciones
             </a>
-            <a class="nav-link {{ request()->routeIs('rutas.*') ? 'active' : '' }}" href="{{ route('rutas.index') }}">
-                <i class="bi bi-map"></i>Rutas
-            </a>
             @endif
 
             {{-- SECCIÓN: ADMINISTRADOR (Gestión de usuarios/motoristas) --}}

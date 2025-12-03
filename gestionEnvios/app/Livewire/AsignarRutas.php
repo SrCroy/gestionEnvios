@@ -21,23 +21,25 @@ class AsignarRutas extends Component
     
     // Variables de data
     public $fechasConAsignaciones = [];
-    public $motoristasDelDia = Collection::class;
-    public $paquetesDisponibles = Collection::class;
-    public $asignacionesDelMotorista = Collection::class;
+    public $motoristasDelDia; // Inicializado en mount
+    public $paquetesDisponibles; // Inicializado en mount
+    public $asignacionesDelMotorista; // Inicializado en mount
     
     // Variables de estadísticas
     public $pesoTotal = 0.0;
     public $capacidadMaxima = 0.0;
     public $porcentajeUso = 0.0;
     public $vehiculoAsignado = null;
+    
+    // FIX: Variable que faltaba y causaba el error ErrorException
+    public $pesoSeleccionado = 0.0;
 
-    // Método para forzar recarga
+    // Método para forzar recarga (Asegúrate de que este método maneje la lógica de inicialización)
     public function recargarTodo()
     {
          if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
+             return redirect()->route('login');
+         }
 
         if (Auth::user()->rol !== 'Administrador') {
             abort(403, 'No tienes permiso para ver esta página.');
@@ -59,15 +61,16 @@ class AsignarRutas extends Component
         $this->cargarFechasConAsignaciones();
         if (!empty($this->fechasConAsignaciones)) {
             $this->fechaSeleccionada = $this->fechasConAsignaciones[0];
-            $this->cargarMotoristasDelDia();
         } else {
             // Si no hay fechas con asignaciones, establece la fecha de hoy
             $this->fechaSeleccionada = now()->toDateString();
-            $this->cargarMotoristasDelDia();
         }
+        // Inicialización para evitar errores de tipo si las propiedades no son de tipo Collection::class
         $this->motoristasDelDia = new Collection();
         $this->paquetesDisponibles = new Collection();
         $this->asignacionesDelMotorista = new Collection();
+        
+        $this->cargarMotoristasDelDia();
     }
 
     private function cargarFechasConAsignaciones()
@@ -216,7 +219,7 @@ class AsignarRutas extends Component
         
         // Cargar los pesos de todos los paquetes seleccionados en una sola consulta
         $pesoData = Paquete::whereIn('id', $paqueteIds)
-                            ->sum('peso');
+                         ->sum('peso');
 
         $this->pesoSeleccionado = $pesoData;
 

@@ -31,7 +31,7 @@ Route::get('/', function () {
 
 
     if (Auth::guard('cliente')->check()) {
-        return redirect()->route('cliente.dashboard');
+        return redirect()->route('clientes.dashboard');
     }
 
     return view('welcome');

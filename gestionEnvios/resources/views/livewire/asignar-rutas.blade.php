@@ -157,6 +157,7 @@
                                         <span class="badge bg-secondary">{{ count($paquetesSeleccionados) }}</span>
                                     </p>
                                     <p class="mb-0">
+                                        {{-- LÍNEA 160: ESTA ES LA LÍNEA QUE CAUSÓ EL ERROR --}}
                                         <strong>Peso a añadir:</strong> {{ number_format($pesoSeleccionado, 2) }} kg
                                     </p>
                                 </div>
