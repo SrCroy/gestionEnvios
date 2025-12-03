@@ -64,3 +64,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/asignar-rutas', function () {
     return view('asignar-rutas.index');
 })->name('asignar.rutas');
+
+Route::get('/paquetes', function (){
+    return view('paquetes.index');
+})->name('paquetes.index');
