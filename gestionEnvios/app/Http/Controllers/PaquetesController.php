@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\paquetes;
+use App\Models\clientes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaquetesController extends Controller
 {
@@ -13,6 +15,7 @@ class PaquetesController extends Controller
     public function index()
     {
         //
+        return view('paquetes.PaquetesIndex');
     }
 
     /**
@@ -34,7 +37,7 @@ class PaquetesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(paquetes $paquetes)
+    public function show($id)
     {
         //
     }
@@ -42,7 +45,7 @@ class PaquetesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(paquetes $paquetes)
+    public function edit($id)
     {
         //
     }
@@ -50,7 +53,7 @@ class PaquetesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, paquetes $paquetes)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -58,7 +61,7 @@ class PaquetesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(paquetes $paquetes)
+    public function destroy($id)
     {
         //
     }

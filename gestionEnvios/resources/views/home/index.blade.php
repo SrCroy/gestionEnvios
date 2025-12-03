@@ -223,13 +223,9 @@
                 close: true,
                 gravity: "top", 
                 position: "right", 
-                // --- AQUÍ ESTÁ EL CAMBIO ---
-                // Antes: backgroundColor: colors[type]...
-                // Ahora: usamos el objeto style
                 style: {
                     background: colors[type] || colors['success'],
                 },
-                // ---------------------------
                 stopOnFocus: true, 
             }).showToast();
         }
@@ -258,7 +254,6 @@
                 const modalId = Array.isArray(id) ? id[0] : id;
                 const el = document.getElementById(modalId);
                 if(el) {
-                    // --- SOLUCIÓN AL ERROR ARIA-HIDDEN ---
                     // Quitamos el foco del botón antes de ocultar el modal
                     if (document.activeElement instanceof HTMLElement) {
                         document.activeElement.blur();

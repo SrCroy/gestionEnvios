@@ -7,10 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 class paquetes extends Model
 {
     protected $table = 'paquetes';
+    
     protected $fillable = [
-        'idDestinatario', 'idRemitente', 'idVehiculo', 'descripcion', 'peso', 'altura', 'fechaRegistro', 'fechaEstimadaEntrega', 'estadoActual'
+        'idDestinatario', 
+        'idRemitente', 
+        'idVehiculo', 
+        'descripcion', 
+        'peso', 
+        'altura', 
+        'fechaRegistro', 
+        'fechaEstimadaEntrega', 
+        'estadoActual'
     ];
 
+    protected $casts = [
+        'fechaRegistro' => 'date',
+        'fechaEstimadaEntrega' => 'date',
+        'peso' => 'decimal:2',
+        'altura' => 'decimal:2',
+    ];
+
+    // Relaciones
     public function destinatario()
     {
         return $this->belongsTo(clientes::class, 'idDestinatario');

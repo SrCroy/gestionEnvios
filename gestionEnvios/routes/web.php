@@ -10,6 +10,7 @@ use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\AsignacionesController;
 use App\Http\Controllers\ClienteAuthController;
 use App\Http\Controllers\ClienteRegistro;
+use App\Http\Controllers\PaquetesController;
 
 Route::get('/', function () {
     return view('home.dashboard');
@@ -63,20 +64,25 @@ Route::middleware('auth')->group(function () {
     Route::put('/asignaciones/{id}', [AsignacionesController::class, 'update'])->name('asignaciones.update');
     Route::delete('/asignaciones/{id}', [AsignacionesController::class, 'destroy'])->name('asignaciones.destroy');
 });
+
+// Rutas de Login para Clientes
 Route::get('/cliente/login', [ClienteAuthController::class, 'showLoginForm'])->name('cliente.login');
 Route::post('/cliente/login', [ClienteAuthController::class, 'login'])->name('cliente.login.store');
 
-
-Route::middleware('auth:cliente')->group(function () {
-    Route::get('/cliente/dashboard', function () {
-        return view('clientes.dashboard');
-    })->name('clientes.dashboard');
-    Route::get('/cliente/paquetes', function () {
-        return view('clientes.paquete');
-    })->name('clientes.paquete');
-});
-
-// routes/web.php
+// Rutas de Registro para Clientes
 Route::get('/cliente/registro', [ClienteRegistro::class, 'showRegisterForm'])->name('cliente.register');
 Route::post('/cliente/registro', [ClienteRegistro::class, 'register'])->name('cliente.register.store');
 
+
+// --- RUTAS DEL PANEL DE CLIENTE ---
+Route::middleware('auth:cliente')->group(function () {
+    
+    // Dashboard
+    Route::get('/cliente/dashboard', function () {
+        return view('clientes.dashboard');
+    })->name('clientes.dashboard');
+
+    Route::get('/cliente/paquetes', function () {
+        return view('paquetes.PaquetesIndex');
+    })->name('paquetes.index');
+});

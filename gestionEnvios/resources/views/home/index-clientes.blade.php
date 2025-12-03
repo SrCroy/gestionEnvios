@@ -152,7 +152,7 @@
                 <i class="bi bi-grid-1x2-fill"></i> Resumen
             </a>
             
-            <a class="nav-link {{ request()->routeIs('clientes.paquete') ? 'active' : '' }}" href="{{ route('clientes.paquete') }}">
+            <a class="nav-link {{ request()->routeIs('paquetes.PaquetesIndex') ? 'active' : '' }}" href="{{ route('paquetes.index') }}">
                 <i class="bi bi-box2-heart-fill"></i> Mis Paquetes
             </a>
 
@@ -251,40 +251,72 @@
             nonce: ''
         };
 
-        // Sidebar Toggle Mobile
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('sidebarToggle');
-            if(toggle) {
-                toggle.addEventListener('click', () => {
-                    document.getElementById('sidebar').classList.toggle('show');
-                });
-            }
-        });
-
-        // Toastify Helper
-        function showToast(message, type = 'success') {
-            const colors = {
-                success: "linear-gradient(to right, #00b09b, #96c93d)",
-                error: "linear-gradient(to right, #ff5f6d, #ffc371)",
-                info: "linear-gradient(to right, #4facfe, #00f2fe)"
-            };
-            Toastify({
-                text: message,
-                duration: 3000,
-                close: true,
-                gravity: "top", 
-                position: "right", 
-                style: { background: colors[type] || colors['success'] },
-                stopOnFocus: true, 
-            }).showToast();
-        }
-
-        // Listeners Globales
+        // Listeners Globales para Modals y Toasts
         document.addEventListener('livewire:init', () => {
+            
+            // ABRIR MODAL
+            Livewire.on('openModal', (data) => {
+                let modalId = data; 
+                
+                // Si viene como objeto { modalId: 'editModal' }
+                if (typeof data === 'object' && data !== null && 'modalId' in data) {
+                    modalId = data.modalId;
+                }
+                // Si viene como array ['editModal']
+                else if (Array.isArray(data)) {
+                    modalId = data[0];
+                }
+
+                const el = document.getElementById(modalId);
+                if(el) {
+                    const modal = new bootstrap.Modal(el);
+                    modal.show();
+                } else {
+                    console.error('No se encontró el modal con ID:', modalId);
+                }
+            });
+
+            // CERRAR MODAL
+            Livewire.on('closeModal', (data) => {
+                let modalId = data;
+                if (typeof data === 'object' && data !== null && 'modalId' in data) { modalId = data.modalId; }
+                else if (Array.isArray(data)) { modalId = data[0]; }
+
+                const el = document.getElementById(modalId);
+                if(el) {
+                    const modal = bootstrap.Modal.getInstance(el);
+                    if(modal) modal.hide();
+                    
+                    // Limpieza de fondos oscuros que se quedan pegados
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style.removeProperty('overflow');
+                    document.body.style.removeProperty('padding-right');
+                }
+            });
+
+            // TOASTS
             Livewire.on('toast', (data) => {
-                let msg = Array.isArray(data) ? data[0].message : data.message;
-                let type = Array.isArray(data) ? data[0].type : data.type;
-                if(msg) showToast(msg, type);
+                // Manejo robusto de datos del toast
+                let msg = data.message || (Array.isArray(data) ? data[0].message : 'Acción completada');
+                let type = data.type || (Array.isArray(data) ? data[0].type : 'success');
+                
+                const colors = {
+                    success: "linear-gradient(to right, #00b09b, #96c93d)",
+                    error: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                    info: "linear-gradient(to right, #4facfe, #00f2fe)"
+                };
+
+                Toastify({
+                    text: msg,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    style: { background: colors[type] || colors['success'] },
+                    stopOnFocus: true,
+                }).showToast();
             });
         });
     </script>

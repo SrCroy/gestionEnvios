@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('idDestinatario')->nullable()->constrained('clientes')->onDelete('cascade');
             $table->foreignId('idRemitente')->nullable()->constrained('clientes')->onDelete('cascade');
-            $table->foreignId('idVehiculo')->constrained('vehiculos')->onDelete('cascade');
+            $table->foreignId('idVehiculo')->nullable()->constrained('vehiculos')->onDelete('cascade');
             $table->string('descripcion');
             $table->decimal('peso', 10, 2);
             $table->decimal('altura', 10, 2);
